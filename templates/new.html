@@ -1,37 +1,37 @@
 <!DOCTYPE HTML>
 <html lang="ru">
-	<head>
-		<title>ЗаМетки - Новая запись</title>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="/static/styles/styles.css">
-		<link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
-	</head>
-	<body>
-		<div id="header">
-			<h1><a href="/">ЗаМетки</a></h1>
-		</div>
-		<div id="menu">
-			<h2>Навигация</h2>
-			<ul>
-				<li><a href="/">Главная</a></li>
-				<li><a href="/all">Все записи</a></li>
-				<li><a href="/search">Поиск</a></li>
-				<li><a class="curlink" href="/new">Новая запись</a></li>
-			</ul>
-		</div>
-		<div id="contents">
-			<h1>Добавить запись</h1>
-			<div class="formblock">
-				<form method="POST">
-					Укажите название записи:<br>
-					<input type="text" required name="title" size="50" placeholder="Название"><br><br>
-					Перечислите метки, разделяя их пробелами:<br>
-					<input type="text" name="tags" size="50" placeholder="Метки"><br><br>
-					Текст записи:<br>
-					<textarea name="contents" cols="60" rows="10" placeholder="Содержимое"></textarea><br>
-					<button name="newnote" type="submit">Создать</button>
-				</form>
-			</div>
-		</div>
-	</body>
+    <head>
+        <title>ЗаМетки - Новая запись</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/styles/styles.css">
+        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div id="header">
+            <h1><a href="/">ЗаМетки</a></h1>
+        </div>
+        <div id="menu">
+            <h2>Навигация</h2>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/all">Все записи</a></li>
+                <li><a href="/search">Поиск</a></li>
+                <li><a class="curlink" href="/new">Новая запись</a></li>
+            </ul>
+        </div>
+        <div id="contents">
+            <h1>Добавить запись</h1>
+            <div class="formblock">
+                <form method="POST">
+                    Укажите название записи:<br>
+                    <input type="text" required name="title" size="50" placeholder="Название"><br><br>
+                    Перечислите метки, разделяя их пробелами:<br>
+                    <input type="text" name="tags" size="50" placeholder="Метки"><br><br>
+                    Текст записи:<br>
+                    <textarea name="contents" cols="60" rows="10" placeholder="Содержимое"></textarea><br>
+                    <button name="newnote" type="submit">Создать</button>
+                </form>
+            </div>
+        </div>
+    </body>
 </html>
