@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+	<head>
+		<title>ЗаМетки - Главная</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="/static/styles/styles.css">
+		<link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+	</head>
+	<body>
+		<div id="header">
+			<h1><a href="/">ЗаМетки</a></h1>
+		</div>
+		<div id="menu">
+			<h2>Навигация</h2>
+			<ul>
+				<li><a class="curlink" href="/">Главная</a></li>
+				<li><a href="/all">Все записи</a></li>
+				<li><a href="/search">Поиск</a></li>
+				<li><a href="/new">Новая запись</a></li>
+			</ul>
+		</div>
+		<div id="contents">
+			<h1>Главная</h1>
+			<h2>Последние записи:</h2>
+			<br>
+			{% for note in notes %}
+				<div class="note">
+					<h2><a href="/note/{{note[0]}}">{{note[1]|safe}}</a></h2>
+					{% if note[4] %}
+						{% for tag in note[4].strip().split(" ") %}
+							<span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
+						{% endfor %}
+						<br><br>
+					{% endif %}
+					<i>Создано: {{note[3]}}</i><br>
+					<i>Последнее изменение: {{note[5]}}</i><br>
+					<div class="notetext">
+						{{note[2]|safe}}
+					</div>
+					<a href="/edit/{{note[0]}}">Изменить</a><br>
+					<a href="/delete/{{note[0]}}">Удалить</a><br>
+				</div><br>
+			{% endfor %}
+		</div>
+	</body>
+</html>

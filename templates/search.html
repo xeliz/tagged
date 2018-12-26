@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+	<head>
+		<title>ЗаМетки - Поиск</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="/static/styles/styles.css">
+		<link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+	</head>
+	<body>
+		<div id="header">
+			<h1><a href="/">ЗаМетки</a></h1>
+		</div>
+		<div id="menu">
+			<h2>Навигация</h2>
+			<ul>
+				<li><a href="/">Главная</a></li>
+				<li><a href="/all">Все записи</a></li>
+				<li><a class="curlink" href="/search">Поиск</a></li>
+				<li><a href="/new">Новая запись</a></li>
+			</ul>
+		</div>
+		<div id="contents">
+		<h1>Поиск</h1>
+			<div class="formblock">
+				<form method="GET" action="/search/results">
+					Перечислите через пробелы ключевые слова, которые должны встречаться в тексте:<br>
+					<input type="text" name="keywords" size="50" placeholder="Ключевые слова"><br><br>
+					Перечислите через пробелы метки, которыми должна быть отмечена запись:<br>
+					<input type="text" name="tags" size="50" placeholder="Метки"><br><br>
+					<button type="submit">Найти</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
