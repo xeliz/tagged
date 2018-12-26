@@ -4,20 +4,32 @@ import html
 import datetime
 import urllib.parse
 
+DB_USER = "root"
+DB_PASSWORD = "1234"
+DB_NAME = "tagged"
+
+# connect to database
 con = mysql.connector.connect(
     host="localhost",
-    user="root",
-    passwd="1234",
-    database="tagged"
+    user=DB_USER,
+    passwd=DB_PASSWORD,
+    database=DB_NAME
 )
+
+# get cursor
 cur = con.cursor()
 
+# create flask app
 app = flask.Flask(__name__)
 
+# make a new template filter "escapeurl"
+# it is used for encoding generated url in templates
 @app.template_filter("escapeurl")
 def escapeurl_filter(s):
     return urllib.parse.quote_plus(s)
 
+# validate tag or keyword when creating/changing/searching notes
+# a tag/keyword can only contain letters, digits, underline, or hyphon.
 def validate_tag(tag):
     if not len(tag):
         return False
