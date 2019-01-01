@@ -1,45 +1,21 @@
-<!DOCTYPE HTML>
-<html lang="ru">
-    <head>
-        <title>ЗаМетки - Все записи</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="/static/styles/styles.css">
-        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
-    </head>
-    <body>
-        <div id="header">
-            <h1><a href="/">ЗаМетки</a></h1>
-        </div>
-        <div id="menu">
-            <h2>Навигация</h2>
-            <ul>
-                <li><a href="/">Главная</a></li>
-                <li><a class="curlink" href="/all">Все записи</a></li>
-                <li><a href="/search">Поиск</a></li>
-                <li><a href="/new">Новая запись</a></li>
-            </ul>
-        </div>
-        <div id="contents">
-            <h1>Все записи</h1>
-            <br>
-            {% for note in notes %}
-                <div class="note">
-                    <h2><a href="/note/{{note['id']}}">{{note['title']|safe}}</a></h2>
-                    {% if note['tags'] %}
-                        {% for tag in note['tags'].strip().split(" ") %}
-                            <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
-                        {% endfor %}
-                        <br><br>
-                    {% endif %}
-                    <i>Создано: {{note['date_created']}}</i><br>
-                    <i>Последнее изменение: {{note['date_modified']}}</i><br>
-                    <div class="notetext">
-                        {{note['contents']|safe}}
-                    </div>
-                    <a href="/edit/{{note['id']}}">Изменить</a><br>
-                    <a href="/delete/{{note['id']}}">Удалить</a><br>
-                </div><br>
-            {% endfor %}
-        </div>
-    </body>
-</html>
+{% extends "basepage.html" %}
+{% block content %}
+    {% for note in notes %}
+        <div class="note">
+            <h2><a href="/note/{{note['id']}}">{{note['title']|safe}}</a></h2>
+            {% if note['tags'] %}
+                {% for tag in note['tags'].strip().split(" ") %}
+                    <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
+                {% endfor %}
+                <br><br>
+            {% endif %}
+            <i>Создано: {{note['date_created']}}</i><br>
+            <i>Последнее изменение: {{note['date_modified']}}</i><br>
+            <div class="notetext">
+                {{note['contents']|safe}}
+            </div>
+            <a href="/edit/{{note['id']}}">Изменить</a><br>
+            <a href="/delete/{{note['id']}}">Удалить</a><br>
+        </div><br>
+    {% endfor %}
+{% endblock %}

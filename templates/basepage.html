@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+    <head>
+        <title>ЗаМетки - {{title}}</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/styles/styles.css">
+        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div id="header">
+            <h1><a href="/">ЗаМетки</a></h1>
+        </div>
+        <div id="menu">
+            <h2>Навигация</h2>
+            <ul>
+                {% if title == "Главная" %}
+                    <li><a class="curlink" href="/">Главная</a></li>
+                {% else %}
+                    <li><a href="/">Главная</a></li>
+                {% endif %}
+                {% if title == "Все записи" %}
+                    <li><a class="curlink" href="/all">Все записи</a></li>
+                {% else %}
+                    <li><a href="/all">Все записи</a></li>
+                {% endif %}
+                {% if title == "Поиск" %}
+                    <li><a class="curlink" href="/search">Поиск</a></li>
+                {% else %}
+                    <li><a href="/search">Поиск</a></li>
+                {% endif %}
+                {% if title == "Новая запись" %}
+                    <li><a class="curlink" href="/new">Новая запись</a></li>
+                {% else %}
+                    <li><a href="/new">Новая запись</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div id="contents">
+            <h1>{{title}}</h1>
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

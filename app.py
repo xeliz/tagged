@@ -62,13 +62,13 @@ def index_page():
     result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC LIMIT 10");
     notes = fetchall_as_dict(cur)
     # notes = cur.fetchall()
-    return flask.render_template("index.html", notes=notes)
+    return flask.render_template("index.html", title="Главная", notes=notes)
 
 # new note page: add new note
 @app.route("/new", methods=["GET", "POST"])
 def new_page():
     if flask.request.method == "GET":
-        return flask.render_template("new.html")
+        return flask.render_template("new.html", title="Новая запись")
     elif flask.request.method == "POST":
         title = html.escape(flask.request.form.get("title", ""))
         contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
@@ -76,27 +76,27 @@ def new_page():
         tagList = rawTags.split()
         for tag in tagList:
             if not validate_tag(tag):
-                return flask.render_template("message.html", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
+                return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
         tags = " ".join(tagList)
         curdt = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
         query = "INSERT INTO notes(title,contents,date_created,tags,date_modified)VALUES(%s,%s,%s,%s,%s)"
         cur.execute(query, (title, contents, curdt, tags, curdt))
         con.commit()
-        return flask.render_template("message.html", message="Запись успешно добавлена")
+        return flask.render_template("message.html", title="Сообщение", message="Запись успешно добавлена")
     else:
-        return flask.render_template("message.html", message="Метод не поддерживается")
+        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
 
 # all notes page
 @app.route("/all")
 def all_page():
     result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC");
     notes = fetchall_as_dict(cur)
-    return flask.render_template("all.html", notes=notes)
+    return flask.render_template("all.html", title="Все записи", notes=notes)
 
 # search page
 @app.route("/search")
 def search_page():
-    return flask.render_template("search.html")
+    return flask.render_template("search.html", title="Поиск")
 
 # search results page
 @app.route("/search/results")
@@ -104,15 +104,15 @@ def search_results_page():
     rawKeywords = flask.request.args.get("keywords", "").strip()
     rawTags = flask.request.args.get("tags", "").strip()
     if rawKeywords == "" and rawTags == "":
-        return flask.render_template("message.html", message="Неправильные параметры поиска")
+        return flask.render_template("message.html", title="Сообщение", message="Неправильные параметры поиска")
     keywords = rawKeywords.split()
     tags = rawTags.split()
     for tag in tags:
         if not validate_tag(tag):
-            return flask.render_template("message.html", message="Неправильные параметры поиска")
+            return flask.render_template("message.html", title="Сообщение", message="Неправильные параметры поиска")
     for keyword in keywords :
         if not validate_tag(keyword):
-            return flask.render_template("message.html", message="Неправильные параметры поиска")
+            return flask.render_template("message.html", title="Сообщение", message="Неправильные параметры поиска")
     keywordsLike = list(map(lambda k: ["%" + k + "%"]*2, keywords))
     keywordsLike1 = []
     for keywordLike in keywordsLike:
@@ -129,20 +129,20 @@ def search_results_page():
     query = "".join(queryParts)
     cur.execute(query, keywordsLike + tagsLike)
     notes = fetchall_as_dict(cur)
-    return flask.render_template("search_results.html", keywords=keywords, tags=tags, notes=notes)
+    return flask.render_template("search_results.html", title="Результаты поиска", keywords=keywords, tags=tags, notes=notes)
 
 # delete page
 @app.route("/delete/<int:noteid>", methods=["GET", "POST"])
 def delete_noteid_page(noteid):
     if flask.request.method == "GET":
-        return flask.render_template("delete_noteid.html", noteid=noteid)
+        return flask.render_template("delete_noteid.html", title="Удаление записи", noteid=noteid)
     elif flask.request.method == "POST":
         query = "DELETE FROM notes WHERE id={}".format(noteid)
         cur.execute(query)
         con.commit()
-        return flask.render_template("message.html", message="Удалено")
+        return flask.render_template("message.html", title="Сообщение", message="Удалено")
     else:
-        return flask.render_template("message.html", message="Метод не поддерживается")
+        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
 
 # specific note page
 @app.route("/note/<int:noteid>")
@@ -150,7 +150,7 @@ def note_noteid_page(noteid):
     query = "SELECT id,title,tags,contents,date_created,date_modified FROM notes WHERE id={}".format(noteid)
     cur.execute(query)
     note = fetchone_as_dict(cur)
-    return flask.render_template("note_noteid.html", note=note)
+    return flask.render_template("note_noteid.html", title="Просмотр записи", note=note)
 
 # note editing page
 @app.route("/edit/<int:noteid>", methods=["GET", "POST"])
@@ -160,7 +160,7 @@ def edit_noteid_page(noteid):
         cur.execute(query)
         note = fetchone_as_dict(cur)
         note["contents"] = note["contents"].replace("<br>", "\n")
-        return flask.render_template("edit_noteid.html", note=note)
+        return flask.render_template("edit_noteid.html", title="Изменение записи", note=note)
     elif flask.request.method == "POST":
         title = html.escape(flask.request.form.get("title", ""))
         contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
@@ -168,7 +168,7 @@ def edit_noteid_page(noteid):
         tagList = rawTags.split()
         for tag in tagList:
             if not validate_tag(tag):
-                return flask.render_template("message.html", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
+                return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
         tags = " ".join(tagList)
         curdt = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
         query = "UPDATE notes SET title=%s,contents=%s,tags=%s,date_modified=%s WHERE id={}".format(noteid)
@@ -176,4 +176,4 @@ def edit_noteid_page(noteid):
         con.commit()
         return flask.redirect(flask.url_for("note_noteid_page", noteid=noteid))
     else:
-        return flask.render_template("message.html", message="Метод не поддерживается")
+        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")

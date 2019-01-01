@@ -1,42 +1,19 @@
-<!DOCTYPE HTML>
-<html lang="ru">
-    <head>
-        <title>ЗаМетки - Просмотр записи</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="/static/styles/styles.css">
-        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
-    </head>
-    <body>
-        <div id="header">
-            <h1><a href="/">ЗаМетки</a></h1>
+{% extends "basepage.html" %}
+{% block content %}
+    <div class="note">
+        <h2>{{note['title']|safe}}</h2>
+        {% if note['tags'] %}
+            {% for tag in note['tags'].strip().split(" ") %}
+                <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
+            {% endfor %}
+            <br><br>
+        {% endif %}
+        <i>Создано: {{note['date_created']}}</i><br>
+        <i>Изменено: {{note['date_modified']}}</i><br>
+        <div class="notetext">
+            {{note['contents']|safe}}
         </div>
-        <div id="menu">
-            <h2>Навигация</h2>
-            <ul>
-                <li><a class="curlink" href="/">Главная</a></li>
-                <li><a href="/all">Все записи</a></li>
-                <li><a href="/search">Поиск</a></li>
-                <li><a href="/new">Новая запись</a></li>
-            </ul>
-        </div>
-        <div id="contents">
-            <div class="note">
-                <h1>Просмотр заметки</h1>
-                <h2>{{note['title']|safe}}</h2>
-                {% if note['tags'] %}
-                    {% for tag in note['tags'].strip().split(" ") %}
-                        <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
-                    {% endfor %}
-                    <br><br>
-                {% endif %}
-                <i>Создано: {{note['date_created']}}</i><br>
-                <i>Изменено: {{note['date_modified']}}</i><br>
-                <div class="notetext">
-                    {{note['contents']|safe}}
-                </div>
-                <a href="/edit/{{note['id']}}">Изменить</a><br>
-                <a href="/delete/{{note['id']}}">Удалить</a><br>
-            </div>
-        </div>
-    </body>
-</html>
+        <a href="/edit/{{note['id']}}">Изменить</a><br>
+        <a href="/delete/{{note['id']}}">Удалить</a><br>
+    </div>
+{% endblock %}

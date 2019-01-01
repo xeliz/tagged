@@ -1,32 +1,7 @@
-<!DOCTYPE HTML>
-<html lang="ru">
-    <head>
-        <title>ЗаМетки - Удаление заметки</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="/static/styles/styles.css">
-        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
-    </head>
-    <body>
-        <div id="header">
-            <h1><a href="/">ЗаМетки</a></h1>
-        </div>
-        <div id="menu">
-            <h2>Навигация</h2>
-            <ul>
-                <li><a class="curlink" href="/">Главная</a></li>
-                <li><a href="/all">Все записи</a></li>
-                <li><a href="/search">Поиск</a></li>
-                <li><a href="/new">Новая запись</a></li>
-            </ul>
-        </div>
-        <div id="contents">
-            <h1>Главная</h1>
-            <h2>Удаление заметки</h2>
-            <br>
-            Действительно удалить заметку?<br><br>
-            <form method="POST">
-                <button name="delete" type="submit">Подтвердить удаление</button>
-            </form>
-        </div>
-    </body>
-</html>
+{% extends "basepage.html" %}
+{% block content %}
+    Действительно удалить заметку?<br><br>
+    <form method="POST">
+        <button name="delete" type="submit">Подтвердить удаление</button>
+    </form>
+{% endblock %}
