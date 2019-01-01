@@ -1,3 +1,5 @@
+![alt text](https://raw.githubusercontent.com/xeliz/tagged/master/static/images/favicon.ico)
+
 # tagged project: keep notes with tags
 
 ### Info
