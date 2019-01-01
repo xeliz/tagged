@@ -23,6 +23,19 @@ if __name__ == "__main__":
         date_created DATETIME NOT NULL,
         tags VARCHAR(500) NOT NULL,
         date_modified DATETIME NOT NULL,
+        userid INTEGER NOT NULL,
+        FOREIGN KEY (userid) REFERENCES users(id),
+        PRIMARY KEY(id))""")
+    cur.execute("""CREATE TABLE users (
+        id INTEGER NOT NULL AUTO_INCREMENT,
+        username VARCHAR(30) NOT NULL UNIQUE,
+        passhash VARCHAR(32) NOT NULL,
+        PRIMARY KEY(id))""")
+    cur.execute("""CREATE TABLE sessions (
+        id INTEGER NOT NULL AUTO_INCREMENT,
+        userid INTEGER NOT NULL,
+        active BOOLEAN NOT NULL,
+        FOREIGN KEY (userid) REFERENCES users(id),
         PRIMARY KEY(id))""")
     con.commit()
     con.close()

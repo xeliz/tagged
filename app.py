@@ -79,7 +79,7 @@ def new_page():
                 return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
         tags = " ".join(tagList)
         curdt = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
-        query = "INSERT INTO notes(title,contents,date_created,tags,date_modified)VALUES(%s,%s,%s,%s,%s)"
+        query = "INSERT INTO notes(title,contents,date_created,tags,date_modified,userid)VALUES(%s,%s,%s,%s,%s,1)"
         cur.execute(query, (title, contents, curdt, tags, curdt))
         con.commit()
         return flask.render_template("message.html", title="Сообщение", message="Запись успешно добавлена")
@@ -177,3 +177,7 @@ def edit_noteid_page(noteid):
         return flask.redirect(flask.url_for("note_noteid_page", noteid=noteid))
     else:
         return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
+
+@app.route("/profile")
+def profile_page():
+    return flask.render_template("profile.html", title="Профиль")
