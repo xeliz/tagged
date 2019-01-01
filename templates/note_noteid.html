@@ -22,20 +22,20 @@
         <div id="contents">
             <div class="note">
                 <h1>Просмотр заметки</h1>
-                <h2>{{note[1]|safe}}</h2>
-                {% if note[2] %}
-                    {% for tag in note[2].strip().split(" ") %}
+                <h2>{{note['title']|safe}}</h2>
+                {% if note['tags'] %}
+                    {% for tag in note['tags'].strip().split(" ") %}
                         <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
                     {% endfor %}
                     <br><br>
                 {% endif %}
-                <i>Создано: {{note[4]}}</i><br>
-                <i>Изменено: {{note[5]}}</i><br>
+                <i>Создано: {{note['date_created']}}</i><br>
+                <i>Изменено: {{note['date_modified']}}</i><br>
                 <div class="notetext">
-                    {{note[3]|safe}}
+                    {{note['contents']|safe}}
                 </div>
-                <a href="/edit/{{note[0]}}">Изменить</a><br>
-                <a href="/delete/{{note[0]}}">Удалить</a><br>
+                <a href="/edit/{{note['id']}}">Изменить</a><br>
+                <a href="/delete/{{note['id']}}">Удалить</a><br>
             </div>
         </div>
     </body>

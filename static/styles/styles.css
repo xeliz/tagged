@@ -1,15 +1,10 @@
-@font-face {
-    font-family: Romic;
-    src: url(Romic.ttf);
-}
-
 body, textarea, input, button {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 14pt;
 }
 
 h1, h2, h3, #header {
-    font-family: Romic, 'Segoe print', helvetica, arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 body {

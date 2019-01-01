@@ -19,6 +19,24 @@ con = mysql.connector.connect(
 # get cursor
 cur = con.cursor()
 
+# fetches one row from MySQL cursor object
+# makes a dict from it
+def fetchone_as_dict(cur):
+    colnames = cur.column_names
+    row = dict(zip(colnames, cur.fetchone()))
+    return row
+
+# fetches all rows from MySQL cursor object
+# makes a list of dicts from it
+# TODO: maybe a generator would be a better solution
+def fetchall_as_dict(cur):
+    colnames = cur.column_names
+    rows = []
+    for row in cur.fetchall():
+        row = dict(zip(colnames, row))
+        rows.append(row)
+    return rows
+
 # create flask app
 app = flask.Flask(__name__)
 
@@ -42,7 +60,8 @@ def validate_tag(tag):
 @app.route("/")
 def index_page():
     result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC LIMIT 10");
-    notes = cur.fetchall()
+    notes = fetchall_as_dict(cur)
+    # notes = cur.fetchall()
     return flask.render_template("index.html", notes=notes)
 
 # new note page: add new note
@@ -71,7 +90,7 @@ def new_page():
 @app.route("/all")
 def all_page():
     result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC");
-    notes = cur.fetchall()
+    notes = fetchall_as_dict(cur)
     return flask.render_template("all.html", notes=notes)
 
 # search page
@@ -109,7 +128,7 @@ def search_results_page():
         queryParts.append("(" + "OR".join(["(tags LIKE %s)"] * len(tags)) + ")")
     query = "".join(queryParts)
     cur.execute(query, keywordsLike + tagsLike)
-    notes = cur.fetchall()
+    notes = fetchall_as_dict(cur)
     return flask.render_template("search_results.html", keywords=keywords, tags=tags, notes=notes)
 
 # delete page
@@ -130,7 +149,7 @@ def delete_noteid_page(noteid):
 def note_noteid_page(noteid):
     query = "SELECT id,title,tags,contents,date_created,date_modified FROM notes WHERE id={}".format(noteid)
     cur.execute(query)
-    note = cur.fetchone()
+    note = fetchone_as_dict(cur)
     return flask.render_template("note_noteid.html", note=note)
 
 # note editing page
@@ -139,8 +158,8 @@ def edit_noteid_page(noteid):
     if flask.request.method == "GET":
         query = "SELECT title,contents,tags FROM notes WHERE id={}".format(noteid)
         cur.execute(query)
-        note = list(cur.fetchone())
-        note[1] = note[1].replace("<br>", "\n")
+        note = fetchone_as_dict(cur)
+        note["contents"] = note["contents"].replace("<br>", "\n")
         return flask.render_template("edit_noteid.html", note=note)
     elif flask.request.method == "POST":
         title = html.escape(flask.request.form.get("title", ""))
