@@ -32,7 +32,7 @@ if __name__ == "__main__":
         passhash VARCHAR(32) NOT NULL,
         PRIMARY KEY(id))""")
     cur.execute("""CREATE TABLE sessions (
-        id INTEGER NOT NULL AUTO_INCREMENT,
+        id VARCHAR(32) NOT NULL UNIQUE,
         userid INTEGER NOT NULL,
         active BOOLEAN NOT NULL,
         FOREIGN KEY (userid) REFERENCES users(id),

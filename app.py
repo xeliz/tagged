@@ -3,6 +3,9 @@ import mysql.connector
 import html
 import datetime
 import urllib.parse
+import random
+import hashlib
+import base64
 
 DB_USER = "root"
 DB_PASSWORD = "1234"
@@ -49,9 +52,18 @@ def escapeurl_filter(s):
 # validate tag or keyword when creating/changing/searching notes
 # a tag/keyword can only contain letters, digits, underline, or hyphon.
 def validate_tag(tag):
-    if not len(tag):
+    if not tag:
         return False
     for c in tag:
+        if not (c in "_-" or c.isalnum()):
+            return False
+    return True
+
+# a valid username is non-empty alphanumeric (or -/_) string
+def validate_username(username):
+    if not username:
+        return False
+    for c in username:
         if not (c in "_-" or c.isalnum()):
             return False
     return True
@@ -76,7 +88,7 @@ def new_page():
         tagList = rawTags.split()
         for tag in tagList:
             if not validate_tag(tag):
-                return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
+                return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-)")
         tags = " ".join(tagList)
         curdt = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
         query = "INSERT INTO notes(title,contents,date_created,tags,date_modified,userid)VALUES(%s,%s,%s,%s,%s,1)"
@@ -168,7 +180,7 @@ def edit_noteid_page(noteid):
         tagList = rawTags.split()
         for tag in tagList:
             if not validate_tag(tag):
-                return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-).")
+                return flask.render_template("message.html", title="Сообщение", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-)")
         tags = " ".join(tagList)
         curdt = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
         query = "UPDATE notes SET title=%s,contents=%s,tags=%s,date_modified=%s WHERE id={}".format(noteid)
@@ -178,6 +190,106 @@ def edit_noteid_page(noteid):
     else:
         return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
 
-@app.route("/profile")
+# generate a session token
+# a token is a string of 20 alphanumeric chars
+TOKEN_LENGTH = 20
+TOKEN_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+def gen_session_token():
+    token = []
+    for _ in range(TOKEN_LENGTH):
+        c = random.choice(TOKEN_CHARS)
+        token.append(c)
+    return "".join(token)
+
+# sign in page
+@app.route("/signin", methods=["GET", "POST"])
+def signin_page():
+    if "session_token" in flask.request.cookies:
+        return flask.redirect(flask.url_for("profile_page"))
+
+    if flask.request.method == "GET":
+        return flask.render_template("signin.html", title="Вход")
+    elif flask.request.method == "POST":
+        username = flask.request.form.get("username")
+        if not validate_username(username):
+            return flask.render_template("message.html", title="Сообщение", message="Имя пользователя может состоять только из букв, цифр, дефиса (-) или нижнего подчёркивания (_)")
+        # check if user exists
+        query = """SELECT id, passhash FROM users WHERE username = %s"""
+        cur.execute(query, (username,))
+        userdata = fetchone_as_dict(cur)
+        if not userdata:
+            return flask.render_template("message.html", title="Сообщение", message="Такой пользователь не зарегистрирован")
+
+        # check if passwords match
+        password = flask.request.form.get("password")
+        passhash = base64.b64encode(hashlib.md5(password.encode("UTF-8")).digest()).decode("UTF-8")
+        if userdata["passhash"] != passhash:
+            return flask.render_template("message.html", title="Сообщение", message="Неверный пароль")
+        # generate unique session token
+        query = """SELECT id FROM sessions WHERE id = %s"""
+        while True:
+            token = gen_session_token()
+            cur.execute(query, (token,))
+            if not cur.fetchall():
+                break
+        query = """INSERT INTO sessions (id, userid, active) VALUES (%s, %s, TRUE)"""
+        cur.execute(query, (token, int(userdata["id"])))
+        con.commit()
+        resp = flask.make_response(flask.redirect(flask.url_for("profile_page")))
+        resp.set_cookie("session_token", token)
+        return resp
+    else:
+        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
+
+# profile page
+@app.route("/profile", methods=["GET", "POST"])
 def profile_page():
-    return flask.render_template("profile.html", title="Профиль")
+    if flask.request.method == "GET":
+        if "session_token" not in flask.request.cookies:
+            return flask.redirect(flask.url_for("signin_page"))
+        token = flask.request.cookies.get("session_token")
+        query = """SELECT username FROM sessions, users WHERE sessions.userid = users.id AND sessions.id = %s"""
+        cur.execute(query, (token,))
+        userdata = fetchall_as_dict(cur)
+        if not userdata:
+            resp = flask.make_response(flask.redirect(flask.url_for("signin_page")))
+            resp.set_cookie("session_token", "", expires=0)
+            return resp
+        userdata = userdata[0]
+        return flask.render_template("profile.html", title="Профиль", userdata=userdata)
+    elif flask.request.method == "POST":
+        action = flask.request.form.get("action")
+        if action == "logout":
+            resp = flask.make_response(flask.redirect(flask.url_for("signin_page")))
+            resp.set_cookie("session_token", "", expires=0)
+            return resp
+        else:
+            return flask.render_template("message.html", title="Сообщение", message="Неправильное действие")
+    else:
+        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
+
+# sign up page
+@app.route("/signup", methods=["GET", "POST"])
+def signup_page():
+    if flask.request.method == "GET":
+        return flask.render_template("signup.html", title="Регистрация")
+    elif flask.request.method == "POST":
+        username = flask.request.form.get("username")
+        # check if user exists
+        query = """SELECT * FROM users WHERE username = %s"""
+        cur.execute(query, (username,))
+        if cur.fetchall():
+            return flask.render_template("message.html", title="Сообщение", message="Это имя пользователя занято")
+
+        # check if passwords match
+        password1 = flask.request.form.get("password1")
+        password2 = flask.request.form.get("password2")
+        if password1 != password2:
+            return flask.render_template("message.html", title="Сообщение", message="Пароли не совпадают")
+        passhash = base64.b64encode(hashlib.md5(password1.encode("UTF-8")).digest()).decode("UTF-8")
+        query = """INSERT INTO users (username, passhash) VALUES (%s, %s)"""
+        cur.execute(query, (username, passhash))
+        con.commit()
+        return flask.render_template("message.html", title="Сообщение", message="Пользователь зарегистрирован, теперь вы можете авторизоваться")
+    else:
+        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
