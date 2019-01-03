@@ -31,7 +31,6 @@ def fetchone_as_dict(cur):
 
 # fetches all rows from MySQL cursor object
 # makes a list of dicts from it
-# TODO: maybe a generator would be a better solution
 def fetchall_as_dict(cur):
     colnames = cur.column_names
     rows = []
@@ -260,6 +259,10 @@ def profile_page():
     elif flask.request.method == "POST":
         action = flask.request.form.get("action")
         if action == "logout":
+            token = flask.request.cookies.get("session_token")
+            query = """UPDATE sessions SET active = FALSE where id = %s"""
+            cur.execute(query, (token,))
+            con.commit()
             resp = flask.make_response(flask.redirect(flask.url_for("signin_page")))
             resp.set_cookie("session_token", "", expires=0)
             return resp
