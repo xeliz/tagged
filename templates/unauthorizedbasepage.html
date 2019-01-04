@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+    <head>
+        <title>ЗаМетки - {{title}}</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/styles/styles.css">
+        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div id="header">
+            <h1><a href="/">ЗаМетки</a></h1>
+        </div>
+        <div id="menu">
+            <h2>Навигация</h2>
+            <ul>
+                {% if title == "Вход" %}
+                    <li><a class="curlink" href="/login">Вход</a></li>
+                {% else %}
+                    <li><a href="/login">Вход</a></li>
+                {% endif %}
+                {% if title == "Регистрация" %}
+                    <li><a class="curlink" href="/signup">Регистрация</a></li>
+                {% else %}
+                    <li><a href="/signup">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div id="contents">
+            <h1>{{title}}</h1>
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>
