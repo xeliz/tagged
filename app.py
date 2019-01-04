@@ -201,29 +201,30 @@ def gen_session_token():
     return "".join(token)
 
 # sign in page
-@app.route("/signin", methods=["GET", "POST"])
-def signin_page():
+@app.route("/login", methods=["GET", "POST"])
+def login_page():
     if "session_token" in flask.request.cookies:
         return flask.redirect(flask.url_for("profile_page"))
 
     if flask.request.method == "GET":
-        return flask.render_template("signin.html", title="Вход")
+        return flask.render_template("login.html", title="Вход")
     elif flask.request.method == "POST":
         username = flask.request.form.get("username")
         if not validate_username(username):
-            return flask.render_template("message.html", title="Сообщение", message="Имя пользователя может состоять только из букв, цифр, дефиса (-) или нижнего подчёркивания (_)")
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Имя пользователя может состоять только из букв, цифр, дефиса (-) или нижнего подчёркивания (_)")
         # check if user exists
         query = """SELECT id, passhash FROM users WHERE username = %s"""
         cur.execute(query, (username,))
-        userdata = fetchone_as_dict(cur)
+        userdata = fetchall_as_dict(cur)
         if not userdata:
-            return flask.render_template("message.html", title="Сообщение", message="Такой пользователь не зарегистрирован")
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Такой пользователь не зарегистрирован")
+        userdata = userdata[0]
 
         # check if passwords match
         password = flask.request.form.get("password")
         passhash = base64.b64encode(hashlib.md5(password.encode("UTF-8")).digest()).decode("UTF-8")
         if userdata["passhash"] != passhash:
-            return flask.render_template("message.html", title="Сообщение", message="Неверный пароль")
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неверный пароль")
         # generate unique session token
         query = """SELECT id FROM sessions WHERE id = %s"""
         while True:
@@ -238,20 +239,20 @@ def signin_page():
         resp.set_cookie("session_token", token)
         return resp
     else:
-        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
+        return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Метод не поддерживается")
 
 # profile page
 @app.route("/profile", methods=["GET", "POST"])
 def profile_page():
     if flask.request.method == "GET":
         if "session_token" not in flask.request.cookies:
-            return flask.redirect(flask.url_for("signin_page"))
+            return flask.redirect(flask.url_for("login_page"))
         token = flask.request.cookies.get("session_token")
         query = """SELECT username FROM sessions, users WHERE sessions.userid = users.id AND sessions.id = %s"""
         cur.execute(query, (token,))
         userdata = fetchall_as_dict(cur)
         if not userdata:
-            resp = flask.make_response(flask.redirect(flask.url_for("signin_page")))
+            resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
             resp.set_cookie("session_token", "", expires=0)
             return resp
         userdata = userdata[0]
@@ -263,13 +264,13 @@ def profile_page():
             query = """UPDATE sessions SET active = FALSE where id = %s"""
             cur.execute(query, (token,))
             con.commit()
-            resp = flask.make_response(flask.redirect(flask.url_for("signin_page")))
+            resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
             resp.set_cookie("session_token", "", expires=0)
             return resp
         else:
-            return flask.render_template("message.html", title="Сообщение", message="Неправильное действие")
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неправильное действие")
     else:
-        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
+        return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Метод не поддерживается")
 
 # sign up page
 @app.route("/signup", methods=["GET", "POST"])
@@ -282,17 +283,17 @@ def signup_page():
         query = """SELECT * FROM users WHERE username = %s"""
         cur.execute(query, (username,))
         if cur.fetchall():
-            return flask.render_template("message.html", title="Сообщение", message="Это имя пользователя занято")
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Это имя пользователя занято")
 
         # check if passwords match
         password1 = flask.request.form.get("password1")
         password2 = flask.request.form.get("password2")
         if password1 != password2:
-            return flask.render_template("message.html", title="Сообщение", message="Пароли не совпадают")
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Пароли не совпадают")
         passhash = base64.b64encode(hashlib.md5(password1.encode("UTF-8")).digest()).decode("UTF-8")
         query = """INSERT INTO users (username, passhash) VALUES (%s, %s)"""
         cur.execute(query, (username, passhash))
         con.commit()
-        return flask.render_template("message.html", title="Сообщение", message="Пользователь зарегистрирован, теперь вы можете авторизоваться")
+        return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Пользователь зарегистрирован, теперь вы можете авторизоваться")
     else:
-        return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
+        return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Метод не поддерживается")
