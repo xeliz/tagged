@@ -93,7 +93,7 @@ def new_page():
         query = "INSERT INTO notes(title,contents,date_created,tags,date_modified,userid)VALUES(%s,%s,%s,%s,%s,1)"
         cur.execute(query, (title, contents, curdt, tags, curdt))
         con.commit()
-        return flask.render_template("message.html", title="Сообщение", message="Запись успешно добавлена")
+        return flask.redirect(flask.url_for("note_noteid_page", noteid=cur.lastrowid))
     else:
         return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
 
