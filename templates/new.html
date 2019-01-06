@@ -1,12 +1,13 @@
+{% set title = "Новая заметка" %}
 {% extends "basepage.html" %}
 {% block content %}
     <div class="formblock">
         <form method="POST">
-            Укажите название записи:<br>
+            Укажите название заметки:<br>
             <input type="text" required name="title" size="50" placeholder="Название"><br><br>
             Перечислите метки, разделяя их пробелами:<br>
             <input type="text" name="tags" size="50" placeholder="Метки"><br><br>
-            Текст записи:<br>
+            Текст заметки:<br>
             <textarea name="contents" cols="60" rows="10" placeholder="Содержимое"></textarea><br>
             <button name="newnote" type="submit">Создать</button>
         </form>
