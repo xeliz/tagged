@@ -86,7 +86,7 @@ def login_user(userid):
     query = """INSERT INTO sessions (id, userid, active) VALUES (%s, %s, TRUE)"""
     cur.execute(query, (token, userid))
     con.commit()
-    resp = flask.make_response(flask.redirect(flask.url_for("profile_page")))
+    resp = flask.make_response(flask.redirect(flask.url_for("index_page")))
     resp.set_cookie("session_token", token)
     return resp
 
