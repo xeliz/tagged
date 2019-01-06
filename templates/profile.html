@@ -2,7 +2,5 @@
 {% extends "basepage.html" %}
 {% block content %}
     Страница пользователя <b>{{userdata['username']}}</b><br>
-    <form method="POST">
-        <button type="submit" name="action" value="logout">Выйти</button>
-    </form>
+    <a href="/action/logout">Выйти</a>
 {% endblock %}

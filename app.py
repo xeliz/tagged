@@ -143,6 +143,9 @@ def contains_all(hay, needles):
 # main page: recent notes
 @app.route("/")
 def index_page():
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC LIMIT 10");
     notes = fetchall_as_dict(cur)
     # notes = cur.fetchall()
@@ -151,6 +154,9 @@ def index_page():
 # new note page: add new note
 @app.route("/new", methods=["GET", "POST"])
 def new_page():
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     if flask.request.method == "GET":
         return flask.render_template("new.html")
     elif flask.request.method == "POST":
@@ -175,6 +181,9 @@ def new_page():
 # all notes page
 @app.route("/all")
 def all_page():
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC");
     notes = fetchall_as_dict(cur)
     return flask.render_template("all.html", notes=notes)
@@ -182,11 +191,17 @@ def all_page():
 # search page
 @app.route("/search")
 def search_page():
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     return flask.render_template("search.html")
 
 # search results page
 @app.route("/search/results")
 def search_results_page():
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     rawKeywords = flask.request.args.get("keywords", "").strip()
     rawTags = flask.request.args.get("tags", "").strip()
     if rawKeywords == "" and rawTags == "":
@@ -220,6 +235,9 @@ def search_results_page():
 # delete page
 @app.route("/delete/<int:noteid>", methods=["GET", "POST"])
 def delete_noteid_page(noteid):
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     if flask.request.method == "GET":
         return flask.render_template("delete_noteid.html", noteid=noteid)
     elif flask.request.method == "POST":
@@ -233,6 +251,9 @@ def delete_noteid_page(noteid):
 # specific note page
 @app.route("/note/<int:noteid>")
 def note_noteid_page(noteid):
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     query = "SELECT id,title,tags,contents,date_created,date_modified FROM notes WHERE id={}".format(noteid)
     cur.execute(query)
     note = fetchone_as_dict(cur)
@@ -241,6 +262,9 @@ def note_noteid_page(noteid):
 # note editing page
 @app.route("/edit/<int:noteid>", methods=["GET", "POST"])
 def edit_noteid_page(noteid):
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     if flask.request.method == "GET":
         query = "SELECT title,contents,tags FROM notes WHERE id={}".format(noteid)
         cur.execute(query)
@@ -300,27 +324,32 @@ def login_page():
         return flask.render_template("unauthorizedmessage.html", message="Метод не поддерживается")
 
 # profile page
-@app.route("/profile", methods=["GET", "POST"])
+@app.route("/profile")
 def profile_page():
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
-    if flask.request.method == "GET":
-        return flask.render_template("profile.html", userdata=userdata)
-    elif flask.request.method == "POST":
-        if "action" not in flask.request.form:
-            return flask.render_template("unauthorizedmessage.html", message="Неправильный запрос")
-        action = flask.request.form.get("action")
-        if action == "logout":
-            return unlogin_user()
-        else:
-            return flask.render_template("unauthorizedmessage.html", message="Неправильное действие")
+    return flask.render_template("profile.html", userdata=userdata)
+
+# page for actions like logout, API requests (now implemented yet), etc
+# many pages perform such actions on their own:
+# e. g. login_page both renders the page and performs user input
+# but some actions can be used with more that one page, e. g. logout is
+# available both in the left menu and in profile page.
+# action_page is designed for such actions
+@app.route("/action/<action>", methods=["GET", "POST"])
+def action_page(action):
+    if action == "logout":
+        return unlogin_user()
     else:
-        return flask.render_template("unauthorizedmessage.html", message="Метод не поддерживается")
+        return flask.render_template("unauthorizedmessage.html", message="Неправильное действие")
 
 # sign up page
 @app.route("/signup", methods=["GET", "POST"])
 def signup_page():
+    userdata = userdata_if_logined()
+    if userdata:
+        return flask.redirect(flask.url_for("/"))
     if flask.request.method == "GET":
         return flask.render_template("signup.html")
     elif flask.request.method == "POST":
