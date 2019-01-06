@@ -39,6 +39,71 @@ def fetchall_as_dict(cur):
         rows.append(row)
     return rows
 
+# returns user data from database if signed in
+# otherwise, returns None
+# might be used to check if user is logined
+def userdata_if_logined():
+    # get session token from cookies
+    if "session_token" not in flask.request.cookies:
+        return None
+    token = flask.request.cookies.get("session_token")
+    # get user data from database
+    query = """SELECT userid, username, passhash FROM sessions, users WHERE sessions.active = TRUE AND sessions.userid = users.id AND sessions.id = %s"""
+    cur.execute(query, (token,))
+    userdata = fetchall_as_dict(cur)
+    # if token was wrong, no rows are returned
+    if not userdata:
+        return None
+    # otherwise, a single row is returned
+    userdata = userdata[0]
+    return userdata
+
+# generate a session token
+# a token is a string of 20 alphanumeric chars
+# TODO: replace random.choice() with more cryptographically safe algorithm
+TOKEN_LENGTH = 20
+TOKEN_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+def gen_session_token():
+    token = []
+    for _ in range(TOKEN_LENGTH):
+        c = random.choice(TOKEN_CHARS)
+        token.append(c)
+    return "".join(token)
+
+# login user:
+# - generate token
+# - update sessions table
+# - set cookie
+# - redirect to profile page
+def login_user(userid):
+    # generate unique session token
+    query = """SELECT id FROM sessions WHERE id = %s"""
+    while True:
+        token = gen_session_token()
+        cur.execute(query, (token,))
+        if not cur.fetchall():
+            break
+    query = """INSERT INTO sessions (id, userid, active) VALUES (%s, %s, TRUE)"""
+    cur.execute(query, (token, userid))
+    con.commit()
+    resp = flask.make_response(flask.redirect(flask.url_for("profile_page")))
+    resp.set_cookie("session_token", token)
+    return resp
+
+# unlogin user:
+# - unset cookie
+# - update session table if the param is True
+# - redirect to login page
+def unlogin_user(deactivateSession=True):
+    token = flask.request.cookies.get("session_token")
+    if deactivateSession:
+        query = """UPDATE sessions SET active = FALSE where id = %s"""
+        cur.execute(query, (token,))
+        con.commit()
+    resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
+    resp.set_cookie("session_token", "", expires=0)
+    return resp
+
 # create flask app
 app = flask.Flask(__name__)
 
@@ -67,6 +132,13 @@ def validate_username(username):
             return False
     return True
 
+# check if "needles" is a subset of "hay"
+def contains_all(hay, needles):
+    for needle in needles:
+        if needle not in hay:
+            return False
+    return True
+
 # main page: recent notes
 @app.route("/")
 def index_page():
@@ -81,6 +153,8 @@ def new_page():
     if flask.request.method == "GET":
         return flask.render_template("new.html", title="Новая запись")
     elif flask.request.method == "POST":
+        if not contains_all(flask.request.form, ("title", "contents", "tags")):
+            return flask.render_template("message.html", title="Сообщение", message="Неверный запрос")
         title = html.escape(flask.request.form.get("title", ""))
         contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
         rawTags = html.escape(flask.request.form.get("tags", "")).strip()
@@ -173,6 +247,8 @@ def edit_noteid_page(noteid):
         note["contents"] = note["contents"].replace("<br>", "\n")
         return flask.render_template("edit_noteid.html", title="Изменение записи", note=note)
     elif flask.request.method == "POST":
+        if not contains_all(flask.request.form, ("title", "contents", "tags")):
+            return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
         title = html.escape(flask.request.form.get("title", ""))
         contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
         rawTags = html.escape(flask.request.form.get("tags", "")).strip()
@@ -189,17 +265,6 @@ def edit_noteid_page(noteid):
     else:
         return flask.render_template("message.html", title="Сообщение", message="Метод не поддерживается")
 
-# generate a session token
-# a token is a string of 20 alphanumeric chars
-TOKEN_LENGTH = 20
-TOKEN_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-def gen_session_token():
-    token = []
-    for _ in range(TOKEN_LENGTH):
-        c = random.choice(TOKEN_CHARS)
-        token.append(c)
-    return "".join(token)
-
 # sign in page
 @app.route("/login", methods=["GET", "POST"])
 def login_page():
@@ -209,6 +274,9 @@ def login_page():
     if flask.request.method == "GET":
         return flask.render_template("login.html", title="Вход")
     elif flask.request.method == "POST":
+        if not contains_all(flask.request.form, ("username", "password")):
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неправильный запрос")
+
         username = flask.request.form.get("username")
         if not validate_username(username):
             return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Имя пользователя может состоять только из букв, цифр, дефиса (-) или нижнего подчёркивания (_)")
@@ -225,48 +293,25 @@ def login_page():
         passhash = base64.b64encode(hashlib.md5(password.encode("UTF-8")).digest()).decode("UTF-8")
         if userdata["passhash"] != passhash:
             return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неверный пароль")
-        # generate unique session token
-        query = """SELECT id FROM sessions WHERE id = %s"""
-        while True:
-            token = gen_session_token()
-            cur.execute(query, (token,))
-            if not cur.fetchall():
-                break
-        query = """INSERT INTO sessions (id, userid, active) VALUES (%s, %s, TRUE)"""
-        cur.execute(query, (token, int(userdata["id"])))
-        con.commit()
-        resp = flask.make_response(flask.redirect(flask.url_for("profile_page")))
-        resp.set_cookie("session_token", token)
-        return resp
+
+        return login_user(userdata["id"]) 
     else:
         return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Метод не поддерживается")
 
 # profile page
 @app.route("/profile", methods=["GET", "POST"])
 def profile_page():
+    userdata = userdata_if_logined()
+    if not userdata:
+        return unlogin_user(False)
     if flask.request.method == "GET":
-        if "session_token" not in flask.request.cookies:
-            return flask.redirect(flask.url_for("login_page"))
-        token = flask.request.cookies.get("session_token")
-        query = """SELECT username FROM sessions, users WHERE sessions.userid = users.id AND sessions.id = %s"""
-        cur.execute(query, (token,))
-        userdata = fetchall_as_dict(cur)
-        if not userdata:
-            resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
-            resp.set_cookie("session_token", "", expires=0)
-            return resp
-        userdata = userdata[0]
         return flask.render_template("profile.html", title="Профиль", userdata=userdata)
     elif flask.request.method == "POST":
+        if "action" not in flask.request.form:
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неправильный запрос")
         action = flask.request.form.get("action")
         if action == "logout":
-            token = flask.request.cookies.get("session_token")
-            query = """UPDATE sessions SET active = FALSE where id = %s"""
-            cur.execute(query, (token,))
-            con.commit()
-            resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
-            resp.set_cookie("session_token", "", expires=0)
-            return resp
+            return unlogin_user()
         else:
             return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неправильное действие")
     else:
@@ -278,6 +323,8 @@ def signup_page():
     if flask.request.method == "GET":
         return flask.render_template("signup.html", title="Регистрация")
     elif flask.request.method == "POST":
+        if contains_all(flask.request.form, ("username", "password1", "password2")):
+            return flask.render_template("unauthorizedmessage.html", title="Сообщение", message="Неправильный запрос")
         username = flask.request.form.get("username")
         # check if user exists
         query = """SELECT * FROM users WHERE username = %s"""
