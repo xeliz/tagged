@@ -146,7 +146,7 @@ def index_page():
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
-    result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC LIMIT 10");
+    result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=%s ORDER BY date_modified DESC LIMIT 10", (userdata["userid"],))
     notes = fetchall_as_dict(cur)
     # notes = cur.fetchall()
     return flask.render_template("index.html", notes=notes)
@@ -171,8 +171,8 @@ def new_page():
                 return flask.render_template("message.html", message="Ошибка: метка может содержать только буквы, цифры, нижнее подчёркивание (_) или дефис(-)")
         tags = " ".join(tagList)
         curdt = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
-        query = "INSERT INTO notes(title,contents,date_created,tags,date_modified,userid)VALUES(%s,%s,%s,%s,%s,1)"
-        cur.execute(query, (title, contents, curdt, tags, curdt))
+        query = "INSERT INTO notes(title,contents,date_created,tags,date_modified,userid)VALUES(%s,%s,%s,%s,%s,%s)"
+        cur.execute(query, (title, contents, curdt, tags, curdt, userdata["userid"]))
         con.commit()
         return flask.redirect(flask.url_for("note_noteid_page", noteid=cur.lastrowid))
     else:
@@ -184,7 +184,7 @@ def all_page():
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
-    result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes ORDER BY date_modified DESC");
+    result = cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=%s ORDER BY date_modified DESC", (userdata["userid"],));
     notes = fetchall_as_dict(cur)
     return flask.render_template("all.html", notes=notes)
 
@@ -220,7 +220,9 @@ def search_results_page():
         keywordsLike1.extend(keywordLike)
     keywordsLike = keywordsLike1
     tagsLike = list(map(lambda t: "%" + t + "%", tags))
-    queryParts = ["SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE "]
+    queryParts = ["SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=%s"]
+    if keywords or tags:
+        queryParts.append(" AND ")
     if keywords:
         queryParts.append("(" + "OR".join(["(title LIKE %s OR contents LIKE %s)"] * len(keywords)) + ")")
         if tags:
@@ -228,7 +230,7 @@ def search_results_page():
     if tags:
         queryParts.append("(" + "OR".join(["(tags LIKE %s)"] * len(tags)) + ")")
     query = "".join(queryParts)
-    cur.execute(query, keywordsLike + tagsLike)
+    cur.execute(query, [userdata["userid"]] + keywordsLike + tagsLike)
     notes = fetchall_as_dict(cur)
     return flask.render_template("search_results.html", keywords=keywords, tags=tags, notes=notes)
 
@@ -238,6 +240,10 @@ def delete_noteid_page(noteid):
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
+    query = """SELECT userid FROM notes WHERE userid=%s AND id=%s"""
+    cur.execute(query, (userdata["userid"], noteid))
+    if not fetchall_as_dict(cur):
+        return flask.render_template("message.html", message="Вы не можете удалить чужую заметку")
     if flask.request.method == "GET":
         return flask.render_template("delete_noteid.html", noteid=noteid)
     elif flask.request.method == "POST":
@@ -254,6 +260,10 @@ def note_noteid_page(noteid):
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
+    query = """SELECT userid FROM notes WHERE userid=%s AND id=%s"""
+    cur.execute(query, (userdata["userid"], noteid))
+    if not fetchall_as_dict(cur):
+        return flask.render_template("message.html", message="Вы не можете просмотреть чужую заметку")
     query = "SELECT id,title,tags,contents,date_created,date_modified FROM notes WHERE id={}".format(noteid)
     cur.execute(query)
     note = fetchone_as_dict(cur)
@@ -265,6 +275,10 @@ def edit_noteid_page(noteid):
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
+    query = """SELECT userid FROM notes WHERE userid=%s AND id=%s"""
+    cur.execute(query, (userdata["userid"], noteid))
+    if not fetchall_as_dict(cur):
+        return flask.render_template("message.html", message="Вы не можете изменить чужую заметку")
     if flask.request.method == "GET":
         query = "SELECT title,contents,tags FROM notes WHERE id={}".format(noteid)
         cur.execute(query)
