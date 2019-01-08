@@ -368,7 +368,7 @@ def signup_page():
     if flask.request.method == "GET":
         return flask.render_template("signup.html")
     elif flask.request.method == "POST":
-        if contains_all(flask.request.form, ("username", "password1", "password2")):
+        if not contains_all(flask.request.form, ("username", "password1", "password2")):
             return flask.render_template("unauthorizedmessage.html", message="Неправильный запрос")
         username = flask.request.form.get("username")
         # check if user exists
