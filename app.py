@@ -7,13 +7,14 @@ import random
 import hashlib
 import base64
 
+DB_HOST = "localhost"
 DB_USER = "root"
 DB_PASSWORD = "1234"
 DB_NAME = "tagged"
 
 # connect to database
 con = mysql.connector.connect(
-    host="localhost",
+    host=DB_HOST,
     user=DB_USER,
     passwd=DB_PASSWORD,
     database=DB_NAME

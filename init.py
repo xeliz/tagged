@@ -4,12 +4,13 @@ import mysql.connector
 # It creates the databasse named "tagged" and table "notes"
 # MySQL is used
 
+DB_HOST = "localhost"
 DB_USER = "root"
 DB_PASSWORD = "1234"
 
 if __name__ == "__main__":
     con = mysql.connector.connect(
-        host="localhost",
+        host=DB_HOST,
         user=DB_USER,
         passwd=DB_PASSWORD)
     cur = con.cursor()
