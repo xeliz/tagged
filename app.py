@@ -12,16 +12,19 @@ DB_USER = "root"
 DB_PASSWORD = "1234"
 DB_NAME = "tagged"
 
-# connect to database
-con = mysql.connector.connect(
-    host=DB_HOST,
-    user=DB_USER,
-    passwd=DB_PASSWORD,
-    database=DB_NAME
-)
+def init_mysql():
+    global con, cur
+    # connect to database
+    con = mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        passwd=DB_PASSWORD,
+        database=DB_NAME
+    )
+    # get cursor
+    cur = con.cursor()
 
-# get cursor
-cur = con.cursor()
+init_mysql()
 
 # fetches one row from MySQL cursor object
 # makes a dict from it
@@ -44,6 +47,8 @@ def fetchall_as_dict(cur):
 # otherwise, returns None
 # might be used to check if user is logined
 def userdata_if_logined():
+    if not con.is_connected():
+        init_mysql()
     # get session token from cookies
     if "session_token" not in flask.request.cookies:
         return None
@@ -77,6 +82,8 @@ def gen_session_token():
 # - set cookie
 # - redirect to profile page
 def login_user(userid):
+    if not con.is_connected():
+        init_mysql()
     # generate unique session token
     query = """SELECT id FROM sessions WHERE id = %s"""
     while True:
@@ -96,6 +103,8 @@ def login_user(userid):
 # - update session table if the param is True
 # - redirect to login page
 def unlogin_user(deactivateSession=True):
+    if not con.is_connected():
+        init_mysql()
     resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
     if "session_token" in flask.request.cookies:
         token = flask.request.cookies.get("session_token")
@@ -144,6 +153,8 @@ def contains_all(hay, needles):
 # main page: recent notes
 @app.route("/")
 def index_page():
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -155,6 +166,8 @@ def index_page():
 # new note page: add new note
 @app.route("/new", methods=["GET", "POST"])
 def new_page():
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -182,6 +195,8 @@ def new_page():
 # all notes page
 @app.route("/all")
 def all_page():
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -200,6 +215,8 @@ def search_page():
 # search results page
 @app.route("/search/results")
 def search_results_page():
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -238,6 +255,8 @@ def search_results_page():
 # delete page
 @app.route("/delete/<int:noteid>", methods=["GET", "POST"])
 def delete_noteid_page(noteid):
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -258,6 +277,8 @@ def delete_noteid_page(noteid):
 # specific note page
 @app.route("/note/<int:noteid>")
 def note_noteid_page(noteid):
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -273,6 +294,8 @@ def note_noteid_page(noteid):
 # note editing page
 @app.route("/edit/<int:noteid>", methods=["GET", "POST"])
 def edit_noteid_page(noteid):
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -308,6 +331,8 @@ def edit_noteid_page(noteid):
 # sign in page
 @app.route("/login", methods=["GET", "POST"])
 def login_page():
+    if not con.is_connected():
+        init_mysql()
     if "session_token" in flask.request.cookies:
         return flask.redirect(flask.url_for("profile_page"))
 
@@ -341,6 +366,8 @@ def login_page():
 # profile page
 @app.route("/profile")
 def profile_page():
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if not userdata:
         return unlogin_user(False)
@@ -354,6 +381,8 @@ def profile_page():
 # action_page is designed for such actions
 @app.route("/action/<action>", methods=["GET", "POST"])
 def action_page(action):
+    if not con.is_connected():
+        init_mysql()
     if action == "logout":
         return unlogin_user()
     else:
@@ -362,6 +391,8 @@ def action_page(action):
 # sign up page
 @app.route("/signup", methods=["GET", "POST"])
 def signup_page():
+    if not con.is_connected():
+        init_mysql()
     userdata = userdata_if_logined()
     if userdata:
         return flask.redirect(flask.url_for("/"))
