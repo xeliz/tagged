@@ -373,20 +373,12 @@ def profile_page():
         return unlogin_user(False)
     return flask.render_template("profile.html", userdata=userdata)
 
-# page for actions like logout, API requests (now implemented yet), etc
-# many pages perform such actions on their own:
-# e. g. login_page both renders the page and performs user input
-# but some actions can be used with more that one page, e. g. logout is
-# available both in the left menu and in profile page.
-# action_page is designed for such actions
-@app.route("/action/<action>", methods=["GET", "POST"])
-def action_page(action):
+# logout page
+@app.route("/logout")
+def logout_page():
     if not con.is_connected():
         init_mysql()
-    if action == "logout":
-        return unlogin_user()
-    else:
-        return flask.render_template("unauthorizedmessage.html", message="Неправильное действие")
+    return unlogin_user()
 
 # sign up page
 @app.route("/signup", methods=["GET", "POST"])
