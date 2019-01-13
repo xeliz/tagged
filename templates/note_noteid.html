@@ -2,17 +2,17 @@
 {% extends "basepage.html" %}
 {% block content %}
     <div class="note">
-        <h2>{{note['title']|safe}}</h2>
+        <h2>{{note['title']}}</h2>
         {% if note['tags'] %}
             {% for tag in note['tags'].strip().split(" ") %}
-                <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag|safe}}</a></span>
+                <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a></span>
             {% endfor %}
             <br><br>
         {% endif %}
         <i>Создано: {{note['date_created']}}</i><br>
         <i>Изменено: {{note['date_modified']}}</i><br>
         <div class="notetext">
-            {{note['contents']|safe}}
+            {{note['contents']|raw2html|safe}}
         </div>
         <a href="/edit/{{note['id']}}">Изменить</a><br>
         <a href="/delete/{{note['id']}}">Удалить</a><br>

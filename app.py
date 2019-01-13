@@ -151,11 +151,20 @@ def contains_all(hay, needles):
 # create flask app
 app = flask.Flask(__name__)
 
-# make a new template filter "escapeurl"
-# it is used for encoding generated url in templates
+# template filter "escapeurl"
+# it is used for encoding generated urls in templates
 @app.template_filter("escapeurl")
 def escapeurl_filter(s):
     return urllib.parse.quote_plus(s)
+
+# template filter "raw2html"
+# it makes some replacements in raw database contents
+# such as "<" -> "&lt;"; "\n" -> "<br>", etc
+@app.template_filter("raw2html")
+def escapeurl_filter(s):
+    s = html.escape(s)
+    s = s.replace("\n", "<br>")
+    return s
 
 # main page: recent notes
 @app.route("/")
@@ -183,9 +192,9 @@ def new_page():
     elif flask.request.method == "POST":
         if not contains_all(flask.request.form, ("title", "contents", "tags")):
             return flask.render_template("message.html", message="Неправильный запрос")
-        title = html.escape(flask.request.form.get("title", ""))
-        contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
-        rawTags = html.escape(flask.request.form.get("tags", "")).strip()
+        title = flask.request.form.get("title", "")
+        contents = flask.request.form.get("contents", "")
+        rawTags = flask.request.form.get("tags", "").strip()
         tagList = rawTags.split()
         for tag in tagList:
             if not validate_tag(tag):
@@ -317,14 +326,13 @@ def edit_noteid_page(noteid):
         query = "SELECT title,contents,tags FROM notes WHERE id=%s"
         cur.execute(query, (noteid,))
         note = fetchone_as_dict(cur)
-        note["contents"] = note["contents"].replace("<br>", "\n")
         return flask.render_template("edit_noteid.html", note=note)
     elif flask.request.method == "POST":
         if not contains_all(flask.request.form, ("title", "contents", "tags")):
             return flask.render_template("message.html", message="Неправильный запрос")
-        title = html.escape(flask.request.form.get("title", ""))
-        contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
-        rawTags = html.escape(flask.request.form.get("tags", "")).strip()
+        title = flask.request.form.get("title", "")
+        contents = flask.request.form.get("contents", "")
+        rawTags = flask.request.form.get("tags", "").strip()
         tagList = rawTags.split()
         for tag in tagList:
             if not validate_tag(tag):
@@ -423,7 +431,7 @@ def signup_page():
     else:
         return flask.render_template("unauthorizedmessage.html", message="Метод не поддерживается")
 
-# --- API pages ---------------------------------------------------------------
+# --- API functions -----------------------------------------------------------
 
 # make JSON response from Python object and return it
 def json_response(obj, success=True):
@@ -583,9 +591,9 @@ def api_new():
     if not userdata:
         return json_response({"message": "Wrong token"}, False)
 
-    title = html.escape(flask.request.form.get("title", ""))
-    contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
-    rawTags = html.escape(flask.request.form.get("tags", "")).strip()
+    title = flask.request.form.get("title", "")
+    contents = flask.request.form.get("contents", "")
+    rawTags = flask.request.form.get("tags", "").strip()
     tagList = rawTags.split()
     for tag in tagList:
         if not validate_tag(tag):
@@ -682,9 +690,9 @@ def api_edit():
     if not fetchall_as_dict(cur):
         return json_response({"message": "Not exists"}, False)
 
-    title = html.escape(flask.request.form.get("title", ""))
-    contents = html.escape(flask.request.form.get("contents", "")).replace("\n", "<br>")
-    rawTags = html.escape(flask.request.form.get("tags", "")).strip()
+    title = flask.request.form.get("title", "")
+    contents = flask.request.form.get("contents", "")
+    rawTags = flask.request.form.get("tags", "").strip()
     tagList = rawTags.split()
     for tag in tagList:
         if not validate_tag(tag):

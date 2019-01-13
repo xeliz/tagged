@@ -4,11 +4,11 @@
     <div class="formblock">
         <form method="POST">
             Укажите название заметки:<br>
-            <input type="text" required name="title" size="50" placeholder="Название" value="{{note['title']|safe}}"><br><br>
+            <input type="text" required name="title" size="50" placeholder="Название" value="{{note['title']}}"><br><br>
             Перечислите метки, разделяя их пробелами:<br>
-            <input type="text" name="tags" size="50" placeholder="Метки" value="{{note['tags']|safe}}"><br><br>
+            <input type="text" name="tags" size="50" placeholder="Метки" value="{{note['tags']}}"><br><br>
             Текст заметки:<br>
-            <textarea name="contents" cols="60" rows="10" placeholder="Содержимое">{{note['contents']|safe}}</textarea><br>
+            <textarea name="contents" cols="60" rows="10" placeholder="Содержимое">{{note['contents']}}</textarea><br>
             <button name="savenote" type="submit">Сохранить</button>
         </form>
     </div>
