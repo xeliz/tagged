@@ -5,48 +5,41 @@ body, textarea, input, button {
 
 body {
     margin: 0;
+    background: rgba(238, 238, 238, 1);
 }
 
 #header {
-    width: 99%;
-    padding: 0.5%;
-    float: left;
-    line-height: 0.5em;
-    background: #555;
-    color: white;
+    padding: 2%;
+    line-height: 0.25em;
+    background: rgba(243, 243, 243, 1);
+    color: rgba(85, 85, 85, 1);
+    font-size: 24pt;
 }
 
 #menu {
-    float: left;
-    width: 98%;
     padding: 1%;
-    background: #777;
+    background: rgba(51, 51, 51, 1);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .menulink {
-    margin: 0.25em;
-    padding: 0.25em;
-    padding-left: 2em;
-    padding-right: 2em;
-    font-size: 1.25em;
-    color: white;
     text-decoration: none;
-    background: #909090;
+    margin: 0 1em 0;
+    color: silver;
 }
 
 .menulink:hover {
-    background: #9C9C9C;
     color: white;
+    text-decoration: underline;
+    font-weight: normal;
 }
 
 .curmenulink, .curmenulink:hover {
-    background: #333;
+    color: white;
 }
 
 #contents {
-    float: left;
-    width: 99%;
-    padding: 0.5%;
+    padding: 1%;
 }
 
 a {
