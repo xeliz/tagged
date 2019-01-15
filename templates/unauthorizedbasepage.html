@@ -8,22 +8,19 @@
     </head>
     <body>
         <div id="header">
-            <h1><a href="/">ЗаМетки</a></h1>
+            <h1>ЗаМетки</h1>
         </div>
         <div id="menu">
-            <h2>Навигация</h2>
-            <ul>
-                {% if title == "Вход" %}
-                    <li><a class="curlink" href="/login">Вход</a></li>
-                {% else %}
-                    <li><a href="/login">Вход</a></li>
-                {% endif %}
-                {% if title == "Регистрация" %}
-                    <li><a class="curlink" href="/signup">Регистрация</a></li>
-                {% else %}
-                    <li><a href="/signup">Регистрация</a></li>
-                {% endif %}
-            </ul>
+            {% if title == "Вход" %}
+                <a class="menulink curmenulink" href="/login">Вход</a>
+            {% else %}
+                <a class="menulink" href="/login">Вход</a>
+            {% endif %}
+            {% if title == "Регистрация" %}
+                <a class="menulink curmenulink" href="/signup">Регистрация</a>
+            {% else %}
+                <a class="menulink" href="/signup">Регистрация</a>
+            {% endif %}
         </div>
         <div id="contents">
             <h1>{{title}}</h1>

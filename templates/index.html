@@ -1,7 +1,7 @@
 {% set title = "Главная" %}
 {% extends "basepage.html" %}
 {% block content %}
-    <h2>Последние заметки:</h2><br>
+    <h2>Последние заметки</h2>
     {% for note in notes %}
         <div class="note">
             <h2><a href="/note/{{note['id']}}">{{note['title']}}</a></h2>

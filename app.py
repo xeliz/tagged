@@ -403,7 +403,7 @@ def signup_page():
         init_mysql()
     userdata = userdata_if_logined()
     if userdata:
-        return flask.redirect(flask.url_for("/"))
+        return flask.redirect(flask.url_for("index_page"))
     if flask.request.method == "GET":
         return flask.render_template("signup.html")
     elif flask.request.method == "POST":

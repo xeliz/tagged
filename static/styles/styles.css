@@ -3,59 +3,58 @@ body, textarea, input, button {
     font-size: 14pt;
 }
 
-h1, h2, h3, #header {
-    font-family: Helvetica, Arial, sans-serif;
-}
-
 body {
-    background: url(../images/grass_background.jpg);
     margin: 0;
 }
 
-#header, #menu, #contents {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 0.5em;
-}
-
-#header table {
-    width: 100%;
-}
-
-#menu ul {
-    line-height: 2em;
-}
-
 #header {
-    width: 96%;
-    margin: 1%;
-    padding: 1%;
+    width: 99%;
+    padding: 0.5%;
     float: left;
+    line-height: 0.5em;
+    background: #555;
+    color: white;
 }
 
 #menu {
-    width: 16%;
-    padding: 1%;
-    margin: 1%;
     float: left;
+    width: 98%;
+    padding: 1%;
+    background: #777;
+}
+
+.menulink {
+    margin: 0.25em;
+    padding: 0.25em;
+    padding-left: 2em;
+    padding-right: 2em;
+    font-size: 1.25em;
+    color: white;
+    text-decoration: none;
+    background: #909090;
+}
+
+.menulink:hover {
+    background: #9C9C9C;
+    color: white;
+}
+
+.curmenulink, .curmenulink:hover {
+    background: #333;
 }
 
 #contents {
-    width: 76%;
-    padding: 1%;
-    margin: 1%;
     float: left;
+    width: 99%;
+    padding: 0.5%;
 }
 
 a {
-    color: #0A0;
+    color: #777;
 }
 
 a:hover {
-    color: #0C0;
-}
-
-.curlink {
-    font-weight: bold;
+    color: #999;
 }
 
 .formblock {
@@ -76,10 +75,9 @@ form textarea[name="contents"] {
 }
 
 .note {
-    border: 1px solid green;
+    box-shadow: 0 0 0 2px silver;
     padding: 0.5em;
     background: white;
-    border-radius: 0.5em;
 }
 
 .tag {
@@ -90,10 +88,9 @@ form textarea[name="contents"] {
 }
 
 .notetext {
-    border: 1px solid green;
+    box-shadow: 0 0 0 2px silver;
     margin: 0.5em;
     padding: 0.5em;
-    border-radius: 0.5em;
     background: #F6F6F6;
 }
 
