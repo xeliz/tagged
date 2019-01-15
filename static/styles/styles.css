@@ -9,11 +9,26 @@ body {
 }
 
 #header {
-    padding: 2%;
+    padding: 1%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sitetitle {
     line-height: 0.25em;
     background: rgba(243, 243, 243, 1);
     color: rgba(85, 85, 85, 1);
     font-size: 24pt;
+    float: left;
+}
+
+.profile {
+    display: inline-block;
+    box-shadow: 0 0 0 1px black;
+    float: right;
+    padding: 0.5em;
+    line-height: 1.5em;
 }
 
 #menu {
