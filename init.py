@@ -17,16 +17,6 @@ if __name__ == "__main__":
 
     cur.execute("""CREATE DATABASE IF NOT EXISTS tagged""")
     cur.execute("""USE tagged""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS notes (
-        id INTEGER NOT NULL AUTO_INCREMENT,
-        title VARCHAR(100) NOT NULL,
-        contents TEXT NOT NULL,
-        date_created DATETIME NOT NULL,
-        tags VARCHAR(500) NOT NULL,
-        date_modified DATETIME NOT NULL,
-        userid INTEGER NOT NULL,
-        FOREIGN KEY (userid) REFERENCES users(id),
-        PRIMARY KEY(id))""")
     cur.execute("""CREATE TABLE users (
         id INTEGER NOT NULL AUTO_INCREMENT,
         username VARCHAR(30) NOT NULL UNIQUE,
@@ -38,5 +28,15 @@ if __name__ == "__main__":
         active BOOLEAN NOT NULL,
         FOREIGN KEY (userid) REFERENCES users(id),
         PRIMARY KEY(id))""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER NOT NULL AUTO_INCREMENT,
+        title VARCHAR(100) NOT NULL,
+        contents TEXT NOT NULL,
+        date_created DATETIME NOT NULL,
+        tags VARCHAR(500) NOT NULL,
+        date_modified DATETIME NOT NULL,
+        userid INTEGER NOT NULL,
+        FOREIGN KEY (userid) REFERENCES users(id),
+        PRIMARY KEY(id))""") 
     con.commit()
     con.close()
