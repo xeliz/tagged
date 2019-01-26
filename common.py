@@ -103,7 +103,7 @@ def login_user(userid):
 def unlogin_user(deactivateSession=True):
     if not con.is_connected():
         init_mysql()
-    resp = flask.make_response(flask.redirect(flask.url_for("login_page")))
+    resp = flask.make_response(flask.redirect(flask.url_for("authapp.login_page")))
     if "session_token" in flask.request.cookies:
         token = flask.request.cookies.get("session_token")
         if deactivateSession:
