@@ -1,4 +1,4 @@
-# routes related to user and their authorization: login/signup/profile/settings
+# routes for site pages related to user and their authorization: login/signup/profile/settings
 
 import flask
 import hashlib
@@ -7,7 +7,6 @@ import base64
 from . import common
 
 authapp = flask.Blueprint("authapp", __name__, template_folder="templates")
-
 
 # sign in page
 @authapp.route("/login", methods=["GET", "POST"])

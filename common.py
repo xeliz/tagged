@@ -3,7 +3,7 @@
 import flask
 import mysql.connector
 import random
-
+import json
 
 DB_HOST = "localhost"
 DB_USER = "root"
@@ -92,7 +92,7 @@ def login_user(userid):
     query = """INSERT INTO sessions (id, userid, active) VALUES (%s, %s, TRUE)"""
     cur.execute(query, (token, userid))
     con.commit()
-    resp = flask.make_response(flask.redirect(flask.url_for("index_page")))
+    resp = flask.make_response(flask.redirect(flask.url_for("notesapp.index_page")))
     resp.set_cookie("session_token", token)
     return resp
 
@@ -138,4 +138,26 @@ def contains_all(hay, needles):
         if needle not in hay:
             return False
     return True
+
+# make JSON response from Python object and return it
+def json_response(obj, success=True):
+    obj["success"] = success
+    resp = flask.make_response(json.dumps(obj))
+    resp.mimetype = "application/json"
+    return resp
+
+# returns user data from database by given token if successful
+# otherwise, returns None
+def userdata_by_token(token):
+    if not con.is_connected():
+        init_mysql()
+    # get user data from database
+    query = """SELECT userid, username, passhash FROM sessions, users WHERE sessions.active = TRUE AND sessions.userid = users.id AND sessions.id = %s"""
+    cur.execute(query, (token,))
+    userdata = fetchall_as_dict(cur)
+    # if token was wrong, no rows are returned
+    if not userdata:
+        return None
+    # otherwise, a single row is returned
+    return userdata[0]
 
