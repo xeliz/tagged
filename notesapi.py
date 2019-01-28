@@ -8,11 +8,11 @@ from . import common
 
 notesapiapp = flask.Blueprint("notesapiapp", __name__, template_folder="templates")
 
-# API function "all after": takes token as GET param and noteid as URL part
+# API function "all after id": takes token as GET param and noteid as URL part
 # returns all notes whose id is greater than note_id if successful
 # otherwise returns error object
-@notesapiapp.route("/api/allafter/<int:noteid>")
-def api_allafter(noteid):
+@notesapiapp.route("/api/allafterid/<int:noteid>")
+def api_allafterid(noteid):
     if not common.con.is_connected():
         common.init_mysql()
     if not common.contains_all(flask.request.args, ("token",)):
