@@ -8,46 +8,40 @@ from . import common
 
 notesapiapp = flask.Blueprint("notesapiapp", __name__, template_folder="templates")
 
-# API function "all after": takes token and note_id with POST
+# API function "all after": takes token as GET param and noteid as URL part
 # returns all notes whose id is greater than note_id if successful
 # otherwise returns error object
-@notesapiapp.route("/api/allafter", methods=["POST"])
-def api_allafter():
+@notesapiapp.route("/api/allafter/<int:noteid>")
+def api_allafter(noteid):
     if not common.con.is_connected():
         common.init_mysql()
-    if not common.contains_all(flask.request.form, ("token", "note_id")):
+    if not common.contains_all(flask.request.args, ("token",)):
         return common.json_response({"message": "Wrong request"}, False)
-    token = flask.request.form.get("token")
+    token = flask.request.args.get("token")
     userdata = common.userdata_by_token(token)
     if not userdata:
         return common.json_response({"message": "Wrong token"}, False)
-
-    noteid = flask.request.form.get("note_id")
-    try:
-        noteid = int(noteid)
-    except Exception as e:
-        return common.json_response({"message": "Wrong request"}, False)
 
     result = common.cur.execute("SELECT id,title,contents,CAST(date_created AS CHAR) AS date_created,tags,CAST(date_modified AS CHAR) AS date_modified FROM notes WHERE id > %s AND userid=%s ORDER BY id DESC", (noteid, userdata["userid"]))
     notes = common.fetchall_as_dict(common.cur)
     return common.json_response({"notes": notes})
 
-# API function "search": takes token and tags or keywords or both with POST
+# API function "search": takes token and tags or keywords or both with GET
 # returns all matching notes if successful
 # otherwise returns error object
-@notesapiapp.route("/api/search", methods=["POST"])
+@notesapiapp.route("/api/search")
 def api_search():
     if not common.con.is_connected():
         common.init_mysql()
-    if not common.contains_all(flask.request.form, ("token",)):
+    if not common.contains_all(flask.request.args, ("token",)):
         return common.json_response({"message": "Wrong request"}, False)
-    token = flask.request.form.get("token")
+    token = flask.request.args.get("token")
     userdata = common.userdata_by_token(token)
     if not userdata:
         return common.json_response({"message": "Wrong token"}, False)
 
-    rawKeywords = flask.request.form.get("keywords", "").strip()
-    rawTags = flask.request.form.get("tags", "").strip()
+    rawKeywords = flask.request.args.get("keywords", "").strip()
+    rawTags = flask.request.args.get("tags", "").strip()
     if rawKeywords == "" and rawTags == "":
         return common.json_response({"message": "Wrong search params"}, False)
     keywords = rawKeywords.split()
@@ -106,25 +100,19 @@ def api_new():
     common.con.commit()
     return common.json_response({"note_id": common.cur.lastrowid})
 
-# API function "note": takes token and note_id with POST
+# API function "note": takes token as GET param and noteid as URL part
 # returns note if successful
 # otherwise returns error object
-@notesapiapp.route("/api/note", methods=["POST"])
-def api_note():
+@notesapiapp.route("/api/note/<int:noteid>")
+def api_note(noteid):
     if not common.con.is_connected():
         common.init_mysql()
-    if not common.contains_all(flask.request.form, ("token", "note_id")):
+    if not common.contains_all(flask.request.args, ("token",)):
         return common.json_response({"message": "Wrong request"}, False)
-    token = flask.request.form.get("token")
+    token = flask.request.args.get("token")
     userdata = common.userdata_by_token(token)
     if not userdata:
         return common.json_response({"message": "Wrong token"}, False)
-
-    noteid = flask.request.form.get("note_id")
-    try:
-        noteid = int(noteid)
-    except Exception as e:
-        return common.json_response({"message": "Wrong request"}, False)
 
     query = "SELECT id,title,tags,contents,CAST(date_created AS CHAR) AS date_created,CAST(date_modified AS CHAR) AS date_modified FROM notes WHERE id=%s AND userid=%s"
     common.cur.execute(query, (noteid, userdata["userid"]))
@@ -134,26 +122,20 @@ def api_note():
     note = result[0]
     return common.json_response({"note": note})
 
-# API function "delete": takes token and note_id with POST
-# deletes note with id that equals to note_id
+# API function "delete": takes token as POST and noteid as URL part
+# deletes note with id that equals to noteid
 # returns success object if successful
 # otherwise returns error object
-@notesapiapp.route("/api/delete", methods=["POST"])
-def api_delete():
+@notesapiapp.route("/api/delete/<int:noteid>", methods=["POST"])
+def api_delete(noteid):
     if not common.con.is_connected():
         common.init_mysql()
-    if not common.contains_all(flask.request.form, ("token", "note_id")):
+    if not common.contains_all(flask.request.form, ("token",)):
         return common.json_response({"message": "Wrong request"}, False)
     token = flask.request.form.get("token")
     userdata = common.userdata_by_token(token)
     if not userdata:
         return common.json_response({"message": "Wrong token"}, False)
-
-    noteid = flask.request.form.get("note_id")
-    try:
-        noteid = int(noteid)
-    except Exception as e:
-        return common.json_response({"message": "Wrong request"}, False)
 
     query = """SELECT userid FROM notes WHERE userid=%s AND id=%s"""
     common.cur.execute(query, (userdata["userid"], noteid))
@@ -165,26 +147,20 @@ def api_delete():
     common.con.commit()
     return common.json_response({})
 
-# API function "edit": takes token, note_id, title, tags, and contents with POST
-# updates note with id that equals to note_id
+# API function "edit": takes noteid as URL part and token, title, tags, and contents with POST
+# updates note with id that equals to noteid
 # returns success object if successful
 # otherwise returns error object
-@notesapiapp.route("/api/edit", methods=["POST"])
-def api_edit():
+@notesapiapp.route("/api/edit/<int:noteid>", methods=["POST"])
+def api_edit(noteid):
     if not common.con.is_connected():
         common.init_mysql()
-    if not common.contains_all(flask.request.form, ("token", "note_id", "title", "tags", "contents")):
+    if not common.contains_all(flask.request.form, ("token", "title", "tags", "contents")):
         return common.json_response({"message": "Wrong request"}, False)
     token = flask.request.form.get("token")
     userdata = common.userdata_by_token(token)
     if not userdata:
         return common.json_response({"message": "Wrong token"}, False)
-
-    noteid = flask.request.form.get("note_id")
-    try:
-        noteid = int(noteid)
-    except Exception as e:
-        return common.json_response({"message": "Wrong request"}, False)
 
     query = """SELECT userid FROM notes WHERE userid=%s AND id=%s"""
     common.cur.execute(query, (userdata["userid"], noteid))
