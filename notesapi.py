@@ -26,6 +26,24 @@ def api_allafterid(noteid):
     notes = common.fetchall_as_dict(common.cur)
     return common.json_response({"notes": notes})
 
+# API function "all after date": takes token as GET param and date as URL part
+# returns all notes whose last modification date is greater than given date if successful
+# otherwise returns error object
+@notesapiapp.route("/api/allafterdate/<date>")
+def api_allafterdate(date):
+    if not common.con.is_connected():
+        common.init_mysql()
+    if not common.contains_all(flask.request.args, ("token",)):
+        return common.json_response({"message": "Wrong request"}, False)
+    token = flask.request.args.get("token")
+    userdata = common.userdata_by_token(token)
+    if not userdata:
+        return common.json_response({"message": "Wrong token"}, False)
+
+    result = common.cur.execute("SELECT id,title,contents,CAST(date_created AS CHAR) AS date_created,tags,CAST(date_modified AS CHAR) AS date_modified FROM notes WHERE date_modified > %s AND userid=%s ORDER BY id DESC", (date, userdata["userid"]))
+    notes = common.fetchall_as_dict(common.cur)
+    return common.json_response({"notes": notes})
+
 # API function "search": takes token and tags or keywords or both with GET
 # returns all matching notes if successful
 # otherwise returns error object
