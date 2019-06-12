@@ -1,6 +1,11 @@
 {% set title = "Главная" %}
 {% extends "basepage.html" %}
 {% block content %}
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.min.js"></script>
+    <script>
+        var md = window.markdownit({linkify: true});
+    </script>
+
     <h2>Последние заметки</h2>
     {% for note in notes %}
         <div class="note">
@@ -13,11 +18,15 @@
             {% endif %}
             <i>Создано: {{note['date_created']}}</i><br>
             <i>Последнее изменение: {{note['date_modified']}}</i><br>
-            <div class="notetext">
-                {{note['contents']|raw2html|safe}}
+            <div class="notetext" id="{{note['id']}}">
+                {{note['contents']}}
             </div>
             <a href="/edit/{{note['id']}}">Изменить</a><br>
             <a href="/delete/{{note['id']}}">Удалить</a><br>
         </div><br>
+        <script>
+            document.getElementById("{{note['id']}}").innerHTML = md.render(document.getElementById("{{note['id']}}").innerHTML);
+        </script>
     {% endfor %}
 {% endblock %}
+

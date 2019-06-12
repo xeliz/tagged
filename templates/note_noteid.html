@@ -11,10 +11,15 @@
         {% endif %}
         <i>Создано: {{note['date_created']}}</i><br>
         <i>Изменено: {{note['date_modified']}}</i><br>
-        <div class="notetext">
-            {{note['contents']|raw2html|safe}}
+        <div class="notetext" id="notetext">
+            {{note['contents']}}
         </div>
         <a href="/edit/{{note['id']}}">Изменить</a><br>
         <a href="/delete/{{note['id']}}">Удалить</a><br>
+        <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.min.js"></script>
+        <script>
+            var md = window.markdownit({linkify: true});
+            document.getElementById("notetext").innerHTML = md.render(document.getElementById("notetext").innerHTML);
+        </script>
     </div>
 {% endblock %}
