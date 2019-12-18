@@ -24,6 +24,16 @@ def init_mysql():
     # get cursor
     cur = con.cursor()
 
+# make a new connection to database
+def get_connection():
+    con = mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        passwd=DB_PASSWORD,
+        database=DB_NAME
+    )
+    return con
+
 # fetches one row from MySQL cursor object
 # makes a dict from it
 def fetchone_as_dict(cur):

@@ -5,21 +5,24 @@ import html
 import datetime
 
 from . import common
+from . import flask_utils 
+from .services import NoteService
 
 notesapp = flask.Blueprint("notesapp", __name__, template_folder="templates")
 
 # main page: recent notes
 @notesapp.route("/")
 def index_page():
-    if not common.con.is_connected():
-        common.init_mysql()
-    userdata = common.userdata_if_logined()
-    if not userdata:
-        return common.unlogin_user(False)
-    result = common.cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=%s ORDER BY date_modified DESC LIMIT 10", (userdata["userid"],))
-    notes = common.fetchall_as_dict(common.cur)
-    # notes = common.cur.fetchall()
-    return flask.render_template("index.html", notes=notes)
+    con = common.get_connection()
+    try:
+        userid = flask_utils.get_logined_user_id(con)
+        ns = NoteService(con)
+        notes = ns.get_last_notes(userid)
+        return flask.render_template("index.html", notes=notes)
+    except flask_utils.NotAuthorized:
+        return flask_utils.unlogin_user(con)
+    finally:
+        con.close()
 
 # new note page: add new note
 @notesapp.route("/new", methods=["GET", "POST"])
@@ -53,14 +56,16 @@ def new_page():
 # all notes page
 @notesapp.route("/all")
 def all_page():
-    if not common.con.is_connected():
-        common.init_mysql()
-    userdata = common.userdata_if_logined()
-    if not userdata:
-        return common.unlogin_user(False)
-    result = common.cur.execute("SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=%s ORDER BY date_modified DESC", (userdata["userid"],))
-    notes = common.fetchall_as_dict(common.cur)
-    return flask.render_template("all.html", notes=notes)
+    con = common.get_connection()
+    try:
+        userid = flask_utils.get_logined_user_id(con)
+        ns = NoteService(con)
+        notes = ns.get_all_notes(userid)
+        return flask.render_template("all.html", notes=notes)
+    except flask_utils.NotAuthorized:
+        return flask_utils.unlogin_user(con)
+    finally:
+        con.close()
 
 # search page
 @notesapp.route("/search")
