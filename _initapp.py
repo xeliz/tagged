@@ -1,8 +1,7 @@
 import mysql.connector
 
-# Script for initializing database
-# It creates the databasse named "tagged" and table "notes"
-# MySQL is used
+# Script for initial database creation
+# Database name: "tagged"
 
 DB_HOST = "localhost"
 DB_USER = "root"

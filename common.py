@@ -4,6 +4,7 @@ import flask
 import mysql.connector
 import random
 import json
+from contextlib import contextmanager
 
 DB_HOST = "localhost"
 DB_USER = "root"
@@ -33,6 +34,16 @@ def get_connection():
         database=DB_NAME
     )
     return con
+
+@contextmanager
+def get_con():
+    con = None
+    try:
+        con = get_connection()
+        yield con
+    finally:
+        if con is not None:
+            con.close()
 
 # fetches one row from MySQL cursor object
 # makes a dict from it

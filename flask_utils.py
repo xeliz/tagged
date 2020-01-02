@@ -3,6 +3,7 @@
 
 import flask
 from .services import SessionService
+from . import common
 
 class NotAuthorized(Exception):
     def __init__(self, *args, **kwargs):
@@ -13,6 +14,20 @@ def has_session_token():
 
 def get_session_token():
     return flask.request.cookies.get("session_token", None)
+
+def login_user(con, userid):
+    # generate unique session token
+    cur = con.cursor()
+    ss = SessionService(con)
+    while True:
+        token = common.gen_session_token()
+        if not ss.session_exists(token):
+            break
+    ss.create_session(userid, token)
+    con.commit()
+    resp = flask.make_response(flask.redirect(flask.url_for("notesapp.index_page")))
+    resp.set_cookie("session_token", token)
+    return resp
 
 def unlogin_user(con):
     if has_session_token():
