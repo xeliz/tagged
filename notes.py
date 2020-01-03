@@ -1,8 +1,6 @@
 # routes for site pages related to notes: viewing, editing, etc.
 
 import flask
-import html
-import datetime
 
 from . import common
 from . import flask_utils 

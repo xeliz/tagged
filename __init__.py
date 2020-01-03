@@ -9,8 +9,6 @@ import json
 from . import common
 from .auth import authapp
 from .notes import notesapp
-from .authapi import authapiapp
-from .notesapi import notesapiapp
 
 common.init_mysql()
 
@@ -19,8 +17,6 @@ app = flask.Flask(__name__)
 
 app.register_blueprint(authapp)
 app.register_blueprint(notesapp)
-app.register_blueprint(authapiapp)
-app.register_blueprint(notesapiapp)
 
 # template filter "escapeurl"
 # it is used for encoding generated urls in templates

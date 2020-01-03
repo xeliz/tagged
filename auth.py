@@ -82,7 +82,6 @@ def signup_page():
     if not common.validate_username(username):
         return flask.render_template("unauthorizedmessage.html", message="Имя пользователя может состоять только из букв, цифр, дефиса (-) или нижнего подчёркивания (_)")
 
-    query = """SELECT * FROM users WHERE username = %s"""
     with common.get_con() as con:
         us = UserService(con)
         userdata = us.get_by_name(username)
