@@ -10,8 +10,6 @@ from . import common
 from .auth import authapp
 from .notes import notesapp
 
-common.init_mysql()
-
 # create flask app
 app = flask.Flask(__name__)
 
