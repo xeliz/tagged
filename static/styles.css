@@ -90,6 +90,13 @@ form textarea[name="contents"] {
     background: white;
 }
 
+.note_title {
+    font-size: 1.5em;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+}
+
 .tag {
     margin: 0.25em;
     padding: 0.25em;

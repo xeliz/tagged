@@ -1,0 +1,22 @@
+{% macro note(note) %}
+<div class="note">
+    <a class="note_title" href="/note/{{note['id']}}">{{note['title']}}</a>
+    {% if note['tags'] %}
+        {% for tag in note['tags'].strip().split(" ") %}
+            <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a></span>
+        {% endfor %}
+        <br><br>
+    {% endif %}
+    <div class="notetext" id="{{note['id']}}">
+        {{note['contents']}}
+    </div>
+    <i>Создано: {{note['date_created']}}</i><br>
+    <i>Последнее изменение: {{note['date_modified']}}</i><br>
+    <a href="/edit/{{note['id']}}">Изменить</a><br>
+    <a href="/delete/{{note['id']}}">Удалить</a><br>
+</div><br>
+<script>
+    document.getElementById("{{note['id']}}").innerHTML = md.render(document.getElementById("{{note['id']}}").innerHTML);
+</script>
+{% endmacro %}
+
