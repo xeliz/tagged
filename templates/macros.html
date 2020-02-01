@@ -10,8 +10,7 @@
     <div class="notetext" id="{{note['id']}}">
         {{note['contents']}}
     </div>
-    <i>Создано: {{note['date_created']}}</i><br>
-    <i>Последнее изменение: {{note['date_modified']}}</i><br>
+    <i>Создано {{note['date_created']}}, изменено {{note['date_modified']}}</i><br>
     <a href="/edit/{{note['id']}}">Изменить</a><br>
     <a href="/delete/{{note['id']}}">Удалить</a><br>
 </div><br>
