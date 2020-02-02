@@ -7,6 +7,6 @@
         var md = window.markdownit({linkify: true});
     </script>
     {% for note in notes %}
-        {{ macros.note(note) }}
+        {{ macros.short_note(note) }}
     {% endfor %}
 {% endblock %}

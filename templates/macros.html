@@ -19,3 +19,15 @@
 </script>
 {% endmacro %}
 
+{% macro short_note(note) %}
+<div class="note">
+    <a class="note_title" href="/note/{{note['id']}}">{{note['title']}}</a>
+    {% if note['tags'] %}
+        {% for tag in note['tags'].strip().split(" ") %}
+            <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a></span>
+        {% endfor %}
+        <br><br>
+    {% endif %}
+</div><br>
+{% endmacro %}
+
