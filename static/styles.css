@@ -64,6 +64,15 @@ a:hover {
     color: #999;
 }
 
+.searchform {
+    font-size: 10pt;
+    margin-left: 15px;
+}
+
+.searchform input, .searchform button {
+    font-size: 10pt;
+}
+
 .formblock {
     overflow: auto;
 }

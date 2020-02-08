@@ -17,9 +17,15 @@
             <div id="leftbox">
                 <a {{('class="menulink curmenulink"' if title == "Главная" else 'class="menulink"')|safe}} href="/">Главная</a><br>
                 <a {{('class="menulink curmenulink"' if title == "Все заметки" else 'class="menulink"')|safe}} href="/all">Все заметки</a><br>
-                <a {{('class="menulink curmenulink"' if title == "Поиск" else 'class="menulink"')|safe}} href="/search">Поиск</a><br>
                 <a {{('class="menulink curmenulink"' if title == "Новая заметка" else 'class="menulink"')|safe}} href="/new">Новая заметка</a><br>
                 <a {{('class="menulink curmenulink"' if title == "Все теги" else 'class="menulink"')|safe}} href="/all_tags">Все теги</a><br>
+                <hr>
+                <form method="GET" action="/search/results" class="searchform">
+                    <b>Поиск</b><br>
+                    <input type="text" name="keywords" size="20" placeholder="Ключевые слова"><br>
+                    <input type="text" name="tags" size="20" placeholder="Теги через пробел"><br>
+                    <button type="submit">Найти</button>
+                </form>
             </div>
             <div id="contents">
                 {% block content %}{% endblock %}

@@ -33,16 +33,6 @@ def all_page():
         except flask_utils.NotAuthorized:
             return flask_utils.unlogin_user(con)
 
-# search page
-@notesapp.route("/search")
-def search_page():
-    with common.get_con() as con:
-        try:
-            userid = flask_utils.get_logined_user_id(con)
-            return flask.render_template("search.html")
-        except flask_utils.NotAuthorized:
-            return flask_utils.unlogin_user(con)
-
 # search results page
 @notesapp.route("/search/results")
 def search_results_page():
