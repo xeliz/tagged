@@ -3,11 +3,11 @@
     <a class="note_title" href="/note/{{note['id']}}">{{note['title']}}</a>
     {% if note['tags'] %}
         {% for tag in note['tags'].strip().split(" ") %}
-            <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a></span>
+            <a class="note_tag" href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a>
         {% endfor %}
         <br><br>
     {% endif %}
-    <div class="notetext" id="{{note['id']}}">
+    <div class="note_text" id="{{note['id']}}">
         {{note['contents']}}
     </div>
     <i>Создано {{note['date_created']}}, изменено {{note['date_modified']}}</i><br>
@@ -20,11 +20,11 @@
 {% endmacro %}
 
 {% macro short_note(note) %}
-<div class="note">
-    <a class="note_title" href="/note/{{note['id']}}">{{note['title']}}</a>
+<div class="short_note">
+    <a class="short_note_title" href="/note/{{note['id']}}">{{note['title']}}</a>
     {% if note['tags'] %}
         {% for tag in note['tags'].strip().split(" ") %}
-            <span class="tag"><a href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a></span>
+            <a class="short_note_tag" href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a>
         {% endfor %}
         <br><br>
     {% endif %}

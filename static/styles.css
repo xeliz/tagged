@@ -9,7 +9,7 @@ body {
 }
 
 #header {
-    padding: 1%;
+    padding: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,7 +19,7 @@ body {
     line-height: 0.25em;
     background: rgba(243, 243, 243, 1);
     color: rgba(85, 85, 85, 1);
-    font-size: 24pt;
+    font-size: 18pt;
     float: left;
 }
 
@@ -27,12 +27,11 @@ body {
     display: inline-block;
     box-shadow: 0 0 0 1px black;
     float: right;
-    padding: 0.5em;
-    line-height: 1.5em;
+    padding: 5px;
 }
 
 #menu {
-    padding: 1%;
+    padding: 10px;
     background: rgba(51, 51, 51, 1);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
@@ -84,9 +83,31 @@ form textarea[name="contents"] {
     padding: 0.5em;
 }
 
+.short_note {
+    box-shadow: 0 0 0 2px silver;
+    padding: 5px;
+    background: white;
+}
+
+.short_note_title {
+    font-size: 1.5em;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.short_note_tag {
+    margin: 0.25em;
+    padding: 0.25em;
+    background: #E8E8E8;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 0.5;
+}
+
 .note {
     box-shadow: 0 0 0 2px silver;
-    padding: 0.5em;
+    padding: 5px;
     background: white;
 }
 
@@ -97,14 +118,15 @@ form textarea[name="contents"] {
     font-weight: bold;
 }
 
-.tag {
+.note_tag {
     margin: 0.25em;
     padding: 0.25em;
     background: #E8E8E8;
     font-weight: bold;
+    text-decoration: none;
 }
 
-.notetext {
+.note_text {
     box-shadow: 0 0 0 2px silver;
     margin: 0.5em;
     padding: 0.5em;
