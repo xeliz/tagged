@@ -29,13 +29,9 @@ body {
     padding: 5px;
 }
 
-#undermenu_container {
-    display: flex;
-}
-
 #leftbox {
-    padding-top: 20px;
-    width: 200px;
+    width: 15%;
+    float: left;
 }
 
 .menulink {
@@ -55,8 +51,9 @@ body {
 }
 
 #contents {
-    padding: 5px;
-    flex-grow: 1;
+    width: 83%;
+    padding: 1%;
+    float: left;
 }
 
 a {
