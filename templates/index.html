@@ -8,6 +8,7 @@
     </script>
 
     <h2>Последние заметки</h2>
+
     {% for note in notes %}
         {{ macros.short_note(note) }}
     {% endfor %}

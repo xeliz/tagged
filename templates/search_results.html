@@ -7,10 +7,10 @@
         var md = window.markdownit({linkify: true});
     </script>
     {% if keywords %}
-        Искомые ключевые слова: {{ ", ".join(keywords) }} <br>
+        <h3>Искомые ключевые слова: {{ ", ".join(keywords) }}</h3>
     {% endif %}
     {% if tags %}
-        Искомые метки: {{ ", ".join(tags) }} <br>
+        <h3>Искомые метки: {{ ", ".join(tags) }} </h3>
     {% endif %}
     <br>
     {% for note in notes %}

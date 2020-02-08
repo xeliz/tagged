@@ -1,0 +1,9 @@
+{% set title = "Все теги" %}
+{% extends "basepage.html" %}
+{% block content %}
+    <h2>{{title}}</h2>
+    {% for tag in all_tags %}
+        <a class="short_note_tag" href="/search/results?tags={{tag|escapeurl}}">{{tag}}</a><br><br>
+    {% endfor %}
+{% endblock %}
+

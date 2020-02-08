@@ -15,21 +15,15 @@
             </div>
 
         </div>
-        <div id="menu">
-            {% if title == "Вход" %}
-                <a class="menulink curmenulink" href="/login">Вход</a>
-            {% else %}
-                <a class="menulink" href="/login">Вход</a>
-            {% endif %}
-            {% if title == "Регистрация" %}
-                <a class="menulink curmenulink" href="/signup">Регистрация</a>
-            {% else %}
-                <a class="menulink" href="/signup">Регистрация</a>
-            {% endif %}
-        </div>
-        <div id="contents">
-            <h1>{{title}}</h1>
-            {% block content %}{% endblock %}
+        <div id="undermenu_container">
+            <div id="leftbox">
+                <a {{('class="menulink curmenulink"' if title == "Вход" else 'class="menulink"')|safe}} href="/login">Вход</a><br>
+                <a {{('class="menulink curmenulink"' if title == "Регистрация" else 'class="menulink"')|safe}} href="/signup">Регистрация</a><br>
+            </div>
+            <div id="contents">
+                <h1>{{title}}</h1>
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </body>
 </html>

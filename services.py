@@ -168,3 +168,15 @@ class NoteService:
         cur.close()
         self.con.commit()
 
+    def find_all_tags(self, userid):
+        query = "SELECT tags FROM notes where userid=%s"
+        cur = self.con.cursor()
+        cur.execute(query, (userid,))
+        tags = common.fetchall_as_dict(cur)
+        cur.close()
+        tags = [tag["tags"] for tag in tags]
+        tags = " ".join(tags).split(" ")
+        tags = list(set(tags))
+        tags.sort()
+        return tags
+

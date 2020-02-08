@@ -16,6 +16,7 @@ def index_page():
             userid = flask_utils.get_logined_user_id(con)
             ns = NoteService(con)
             notes = ns.get_last_notes(userid)
+            all_tags = ns.find_all_tags(userid)
             return flask.render_template("index.html", notes=notes)
         except flask_utils.NotAuthorized:
             return flask_utils.unlogin_user(con)
@@ -28,7 +29,7 @@ def all_page():
             userid = flask_utils.get_logined_user_id(con)
             ns = NoteService(con)
             notes = ns.get_all_notes(userid)
-            return flask.render_template("all.html", notes=notes)
+            return flask.render_template("all_notes.html", notes=notes)
         except flask_utils.NotAuthorized:
             return flask_utils.unlogin_user(con)
 
@@ -130,4 +131,16 @@ def edit_noteid_page(noteid):
             return flask_utils.unlogin_user(con)
         except NoteSearchException:
             return flask.render_template("message.html", message="Заметка не существует")
+
+# page with all tags
+@notesapp.route("/all_tags")
+def all_tags():
+    with common.get_con() as con:
+        try:
+            userid = flask_utils.get_logined_user_id(con)
+            ns = NoteService(con)
+            all_tags = ns.find_all_tags(userid)
+            return flask.render_template("all_tags.html", all_tags=all_tags)
+        except flask_utils.NotAuthorized:
+            return flask_utils.unlogin_user(con)
 

@@ -13,14 +13,17 @@
                 <a href="/profile">Профиль</a> | <a href="/logout">Выход</a>
             </div>
         </div>
-        <div id="menu">
-            <a {{('class="menulink curmenulink"' if title == "Главная" else 'class="menulink"')|safe}} href="/">Главная</a>
-            <a {{('class="menulink curmenulink"' if title == "Все заметки" else 'class="menulink"')|safe}} href="/all">Все заметки</a>
-            <a {{('class="menulink curmenulink"' if title == "Поиск" else 'class="menulink"')|safe}} href="/search">Поиск</a>
-            <a {{('class="menulink curmenulink"' if title == "Новая заметка" else 'class="menulink"')|safe}} href="/new">Новая заметка</a>
-        </div>
-        <div id="contents">
-            {% block content %}{% endblock %}
+        <div id="undermenu_container">
+            <div id="leftbox">
+                <a {{('class="menulink curmenulink"' if title == "Главная" else 'class="menulink"')|safe}} href="/">Главная</a><br>
+                <a {{('class="menulink curmenulink"' if title == "Все заметки" else 'class="menulink"')|safe}} href="/all">Все заметки</a><br>
+                <a {{('class="menulink curmenulink"' if title == "Поиск" else 'class="menulink"')|safe}} href="/search">Поиск</a><br>
+                <a {{('class="menulink curmenulink"' if title == "Новая заметка" else 'class="menulink"')|safe}} href="/new">Новая заметка</a><br>
+                <a {{('class="menulink curmenulink"' if title == "Все теги" else 'class="menulink"')|safe}} href="/all_tags">Все теги</a><br>
+            </div>
+            <div id="contents">
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </body>
 </html>
