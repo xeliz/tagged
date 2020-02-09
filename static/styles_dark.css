@@ -60,11 +60,11 @@ body {
 }
 
 a {
-    color: #777;
+    color: #CCC;
 }
 
 a:hover {
-    color: #555;
+    color: #AAA;
 }
 
 .searchform {
@@ -107,6 +107,7 @@ form textarea[name="contents"] {
     text-decoration: none;
     display: inline-block;
     font-weight: bold;
+    color: #CCC;
 }
 
 .short_note_tag {
@@ -129,6 +130,7 @@ form textarea[name="contents"] {
     text-decoration: none;
     display: inline-block;
     font-weight: bold;
+    color: #CCC;
 }
 
 .note_tag {
