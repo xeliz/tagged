@@ -1,0 +1,148 @@
+body, textarea, input, button {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14pt;
+    background: black;
+    color: white;
+}
+
+body {
+    margin: 0;
+}
+
+#header {
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sitetitle {
+    line-height: 0.25em;
+    background: rgba(12, 12, 12, 1);
+    color: rgba(170, 170, 170, 1);
+    font-size: 18pt;
+    float: left;
+}
+
+.profile {
+    display: inline-block;
+    box-shadow: 0 0 0 1px gray;
+    color: gray;
+    float: right;
+    padding: 5px;
+}
+
+#leftbox {
+    width: 15%;
+    float: left;
+}
+
+.menulink {
+    text-decoration: none;
+    margin-left: 15px;
+    color: white;
+}
+
+.menulink:hover {
+    font-weight: normal;
+    text-decoration: underline;
+    color: white;
+}
+
+.curmenulink, .curmenulink:hover {
+    color: silver;
+}
+
+#contents {
+    width: 83%;
+    padding: 1%;
+    float: left;
+}
+
+a {
+    color: #777;
+}
+
+a:hover {
+    color: #555;
+}
+
+.searchform {
+    font-size: 10pt;
+    margin-left: 15px;
+}
+
+.searchform input, .searchform button {
+    font-size: 10pt;
+}
+
+.formblock {
+    overflow: auto;
+}
+
+form textarea[name="contents"] {
+    /* resize: none; */
+    width: 90%;
+    height: 20em;
+}
+
+#contents th {
+    border-bottom: 1px solid white;
+    background: #333;
+}
+
+#contents td {
+    background: #333;
+    padding: 0.5em;
+}
+
+.short_note {
+    box-shadow: 0 0 0 2px gray;
+    padding: 5px;
+    background: black;
+}
+
+.short_note_title {
+    font-size: 1.5em;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.short_note_tag {
+    margin: 0.25em;
+    padding: 0.25em;
+    background: #171717;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 0.5;
+}
+
+.note {
+    box-shadow: 0 0 0 2px gray;
+    padding: 5px;
+    background: black;
+}
+
+.note_title {
+    font-size: 1.5em;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.note_tag {
+    margin: 0.25em;
+    padding: 0.25em;
+    background: #171717;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.note_text {
+    box-shadow: 0 0 0 2px gray;
+    margin: 0.5em;
+    padding: 0.5em;
+    background: #090909;
+}
+
