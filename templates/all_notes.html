@@ -2,11 +2,6 @@
 {% extends "basepage.html" %}
 {% import "macros.html" as macros %}
 {% block content %}
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.min.js"></script>
-    <script>
-        var md = window.markdownit({linkify: true});
-    </script>
-
     <h2>{{title}}</h2>
     {% for note in notes %}
         {{ macros.short_note(note) }}
