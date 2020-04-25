@@ -146,5 +146,6 @@ form textarea[name="contents"] {
     margin: 0.5em;
     padding: 0.5em;
     background: #090909;
+    overflow: auto;
 }
 
