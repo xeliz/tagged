@@ -25,6 +25,7 @@
                 <a {{('class="menulink curmenulink"' if title == "Все заметки" else 'class="menulink"')|safe}} href="/all">Все заметки</a><br>
                 <a {{('class="menulink curmenulink"' if title == "Новая заметка" else 'class="menulink"')|safe}} href="/new">Новая заметка</a><br>
                 <a {{('class="menulink curmenulink"' if title == "Все теги" else 'class="menulink"')|safe}} href="/all_tags">Все теги</a><br>
+                <a {{('class="menulink curmenulink"' if title == "Экспорт" else 'class="menulink"')|safe}} href="/export">Экспорт</a><br>
                 <hr>
                 <form method="GET" action="/search/results" class="searchform">
                     <b>Поиск</b><br>

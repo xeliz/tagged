@@ -180,3 +180,18 @@ class NoteService:
         tags.sort()
         return tags
 
+    def upload(self, userid, notes):
+        query = """INSERT INTO notes(title,contents,date_created,tags,date_modified,userid)VALUES(%s,%s,%s,%s,%s,%s)"""
+        cur = self.con.cursor()
+        for note in notes:
+            cur.execute(query, (
+                note["title"],
+                note["contents"],
+                note["date_created"],
+                note["tags"],
+                note["date_modified"],
+                userid,
+            ))
+        cur.close()
+        self.con.commit()
+

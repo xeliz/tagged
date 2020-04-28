@@ -1,0 +1,16 @@
+{% set title = "Экспорт" %}
+{% extends "basepage.html" %}
+{% block content %}
+    <h2>{{title}}</h2>
+    <h3>Выгрузка в JSON</h3>
+    Сохранить все заметки пользователя в JSON-файл<br><br>
+    <a href="/export/download">Выгрузить</a>
+    <hr>
+    <h3>Загрузка из JSON</h3>
+    Загрузить из файла все заметки. Существующие данные затронуты не будут<br><br>
+    <form method="POST" enctype="multipart/form-data" action="/export/upload"> 
+        <input name="file" type="file" placeholder="Файл для загрузки">
+        <button type="submit">Загрузить</button>
+    </form>
+{% endblock %}
+

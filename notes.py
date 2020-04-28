@@ -134,3 +134,41 @@ def all_tags():
         except flask_utils.NotAuthorized:
             return flask_utils.unlogin_user(con)
 
+# import/export page
+@notesapp.route("/export")
+def export():
+    with common.get_con() as con:
+        try:
+            userid = flask_utils.get_logined_user_id(con)
+            ns = NoteService(con)
+            all_tags = ns.find_all_tags(userid)
+            return flask.render_template("export.html", all_tags=all_tags)
+        except flask_utils.NotAuthorized:
+            return flask_utils.unlogin_user(con)
+
+@notesapp.route("/export/download")
+def export_download():
+    with common.get_con() as con:
+        try:
+            userid = flask_utils.get_logined_user_id(con)
+            ns = NoteService(con)
+            notes = ns.get_all_notes(userid)
+            return flask.jsonify(notes)
+        except flask_utils.NotAuthorized:
+            return flask_utils.unlogin_user(con)
+
+@notesapp.route("/export/upload", methods=["POST"])
+def export_upload():
+     with common.get_con() as con:
+        try:
+            f = flask.request.files["file"]
+            bs = f.read()
+            f.close()
+            notes = json.loads(bs)
+            userid = flask_utils.get_logined_user_id(con)
+            ns = NoteService(con)
+            ns.upload(userid, notes)
+            return flask.render_template("message.html", message="Экспорт завершён.")
+        except flask_utils.NotAuthorized:
+            return flask_utils.unlogin_user(con)
+
