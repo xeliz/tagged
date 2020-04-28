@@ -1,41 +1,30 @@
-import mysql.connector
+import sqlite3
 
 # Script for initial database creation
 # Database name: "tagged"
 
-DB_HOST = "localhost"
-DB_USER = "root"
-DB_PASSWORD = "1234"
-
 if __name__ == "__main__":
-    con = mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        passwd=DB_PASSWORD)
+    con = sqlite3.connect("tagged.db")
     cur = con.cursor()
 
-    cur.execute("""CREATE DATABASE IF NOT EXISTS tagged""")
-    cur.execute("""USE tagged""")
     cur.execute("""CREATE TABLE users (
-        id INTEGER NOT NULL AUTO_INCREMENT,
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
         username VARCHAR(30) NOT NULL UNIQUE,
-        passhash VARCHAR(32) NOT NULL,
-        PRIMARY KEY(id))""")
+        passhash VARCHAR(32) NOT NULL)""")
     cur.execute("""CREATE TABLE sessions (
-        id VARCHAR(32) NOT NULL UNIQUE,
+        id VARCHAR(32) NOT NULL PRIMARY KEY,
         userid INTEGER NOT NULL,
-        active BOOLEAN NOT NULL,
-        FOREIGN KEY (userid) REFERENCES users(id),
-        PRIMARY KEY(id))""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS notes (
-        id INTEGER NOT NULL AUTO_INCREMENT,
+        active INTEGER(1) NOT NULL,
+        FOREIGN KEY (userid) REFERENCES users(id))""")
+    cur.execute("""CREATE TABLE notes (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
         title VARCHAR(100) NOT NULL,
         contents TEXT NOT NULL,
-        date_created DATETIME NOT NULL,
+        date_created VARCHAR(50) NOT NULL,
         tags VARCHAR(500) NOT NULL,
-        date_modified DATETIME NOT NULL,
+        date_modified VARCHAR(50) NOT NULL,
         userid INTEGER NOT NULL,
-        FOREIGN KEY (userid) REFERENCES users(id),
-        PRIMARY KEY(id))""") 
+        FOREIGN KEY (userid) REFERENCES users(id))""") 
     con.commit()
     con.close()
+

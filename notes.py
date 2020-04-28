@@ -5,6 +5,7 @@ import flask
 from . import common
 from . import flask_utils 
 from .services import NoteService, NoteSearchException
+import json
 
 notesapp = flask.Blueprint("notesapp", __name__, template_folder="templates")
 
