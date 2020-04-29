@@ -91,7 +91,7 @@ class NoteService:
         self.con = con
 
     def get_last_notes(self, userid, n=10):
-        query =  """SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=? ORDER BY date_modified DESC LIMIT ?"""
+        query =  """SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=? ORDER BY date(date_modified) DESC LIMIT ?"""
         cur = self.con.cursor()
         cur.execute(query, (userid, n))
         notes = common.fetchall_as_dict(cur)
@@ -99,7 +99,7 @@ class NoteService:
         return notes
 
     def get_all_notes(self, userid):
-        query =  """SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=? ORDER BY date_modified DESC"""
+        query =  """SELECT id,title,contents,date_created,tags,date_modified FROM notes WHERE userid=? ORDER BY date(date_modified) DESC"""
         cur = self.con.cursor()
         cur.execute(query, (userid,))
         notes = common.fetchall_as_dict(cur)
