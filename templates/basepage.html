@@ -3,10 +3,12 @@
     <head>
         <title>{{title}} - ЗаМетки</title>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="/static/styles_dark.css">
+        <link rel="stylesheet" href="/static/styles.css">
         <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
         <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.min.js"></script>
         <script src="/static/markdown-it-headinganchor.js"></script>
+        <link rel="stylesheet" href="/static/simplemde.min.css">
+        <script src="/static/simplemde.min.js"></script>
         <script>
             var md = window.markdownit({linkify: true});
             headinganchor_plugin(md, {});
